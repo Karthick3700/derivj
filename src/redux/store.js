@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import logger from "redux-logger";
-import rootReducer from "./reducers";
+import rootReducers from "./root-reducer";
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: rootReducers,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
   devTools: process.env.NODE_MODE !== "production",
 });

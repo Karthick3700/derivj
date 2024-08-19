@@ -1,10 +1,18 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/user/authSlice";
 
 const HeaderAfterLogin = () => {
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const handleLogout = useCallback(() => {
+    dispatch(logout());
+  }, [dispatch]);
 
   const handleMenuClick = () => {
     setMenuOpen(!menuOpen);
@@ -106,18 +114,12 @@ const HeaderAfterLogin = () => {
           <div className="flex gap-4">
             <button onClick={darkModeHandler}>{utils.theme(32, 32)}</button>
             <div className="flex justify-center items-center gap-4">
-              <Link
-                href={CONST.Routes.SIGN_UP}
+              <button
+                onClick={handleLogout}
                 className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
               >
-                SIGN UP
-              </Link>
-              <Link
-                href={CONST.Routes.LOGIN}
-                className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
-              >
-                SIGN IN
-              </Link>
+                LOG OUT
+              </button>
             </div>
           </div>
         </div>
@@ -145,20 +147,12 @@ const HeaderAfterLogin = () => {
               >
                 Contact
               </Link>
-              <Link
-                href={CONST.Routes.SIGN_UP}
-                onClick={handleMenuClick}
+              <button
+                onClick={handleLogout}
                 className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
               >
-                SIGN UP
-              </Link>
-              <Link
-                href={CONST.Routes.LOGIN}
-                onClick={handleMenuClick}
-                className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
-              >
-                SIGN IN
-              </Link>
+                LOG OUT
+              </button>
             </div>
           </div>
         </Fragment>

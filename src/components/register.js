@@ -1,71 +1,62 @@
+import React, { useCallback, useState } from "react";
 import { services } from "@/services";
-import { CONST, utils } from "@/utils";
+import { CONST, utils, validator } from "@/utils";
 import Link from "next/link";
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import { SIGN_UP } from "@/services/api-url.service";
 import { useRouter } from "next/router";
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .required()
-    .min(3, CONST.MSG.MIN_CHAR)
-    .trim("")
-    .matches(CONST.MSG.NAME_REGEX, CONST.MSG.INVALID_NAME)
-    .label(CONST.MSG.REQ_NAME),
-  email: Yup.string()
-    .email(CONST.MSG.INVALID_EMAIL)
-    .label(CONST.MSG.REQ_EMAIL)
-    .required(),
-  password: Yup.string()
-    .label(CONST.MSG.REQ_PWD)
-    .required()
-    .matches(CONST.MSG.PASSWORD_REGEX_EXP, CONST.MSG.PASSWORD_REGEX_MSG),
-
-  confirmpassword: Yup.string()
-    .label(CONST.MSG.REQ_CONFIRM_PASSWORD)
-    .required()
-    .oneOf([Yup.ref("password")], CONST.MSG.REQ_PASSWORD_NOT_MATCH),
-});
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from "./spinner";
+import { showConfirmpwd, showPassword } from "@/redux/localstore/localSlice";
 
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
+  const showpassword = useSelector((state) => state.local?.showPassword);
+  const showConfirmpassword = useSelector(
+    (state) => state.local?.showConfirmpwd
+  );
 
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  const handleShowConfirmPwd = () => {
-    setShowConfirmPwd(!showConfirmPwd);
-  };
+  const [loading, setLoading] = useState(false);
+
+  const handleShowPassword = useCallback(() => {
+    dispatch(showPassword());
+  }, [dispatch]);
+
+  const handleShowConfirmPwd = useCallback(() => {
+    dispatch(showConfirmpwd());
+  }, [dispatch]);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({ mode: "onChange", resolver: yupResolver(validationSchema) });
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(validator.registerSchema),
+  });
 
   const onSubmitSignup = async (data) => {
-    
+    setLoading(true);
     const { name, email, password } = data;
     const payload = { name, email, password };
-
     try {
       const resp = await services.post(SIGN_UP, payload);
-      if (resp?.statusCode === 200) {
-        utils.handleSuccess(resp?.message);
+      console.log("resp::", resp);
+      if (resp?.statusCode === CONST.RESP_CODE.SUCCESS_CODE) {
+        utils.showSuccessMsg(resp?.message);
         router.push(CONST.Routes.LOGIN);
       } else {
-        utils.handleError(resp?.message);
+        utils.showErrorMsg(resp?.message);
       }
-
+      setLoading(false);
       reset();
     } catch (error) {
       console.log("Error::", error);
+      utils.showErrorMsg(error?.message);
+      setLoading(false);
     }
   };
 
@@ -88,10 +79,10 @@ const Register = () => {
                 {...register("name")}
                 placeholder="John"
                 type="text"
-                className="border placeholder:text-sm placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white dark:bg-transparent border-gray-300 rounded-md dark:focus:border-blue-400 dark:text-white"
+                className="border font-medium placeholder:text-sm placeholder-gray-400 focus:outline-none focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white dark:bg-transparent border-gray-300 rounded-md dark:focus:border-blue-400 dark:text-white"
               />
               {errors.name && (
-                <p className="text-red-500 dark:text-red-300 mt-2 text-xs">
+                <p className="text-red-500 dark:text-red-300 mt-2 text-xs font-medium">
                   {errors.name.message}
                 </p>
               )}
@@ -104,10 +95,10 @@ const Register = () => {
                 {...register("email")}
                 placeholder="123@ex.com"
                 type="text"
-                className="border placeholder-gray-400 focus:outline-none placeholder:text-sm focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white dark:bg-transparent border-gray-300 rounded-md dark:focus:border-blue-400 dark:text-white"
+                className="border font-medium placeholder-gray-400 focus:outline-none placeholder:text-sm focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white dark:bg-transparent border-gray-300 rounded-md dark:focus:border-blue-400 dark:text-white"
               />
               {errors.email && (
-                <p className="text-red-500 dark:text-red-300 mt-2 text-xs">
+                <p className="text-red-500 font-medium dark:text-red-300 mt-2 text-xs">
                   {errors.email.message}
                 </p>
               )}
@@ -120,14 +111,14 @@ const Register = () => {
                 <input
                   {...register("password")}
                   placeholder="Password"
-                  type={showPassword ? "text" : "password"}
-                  className="border placeholder-gray-400 dark:bg-transparent dark:focus:border-blue-400 dark:placeholder:text-white focus:outline-none placeholder:text-sm focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white border-gray-300 rounded-md dark:text-white"
+                  type={showpassword ? "text" : "password"}
+                  className="border font-medium placeholder-gray-400 dark:bg-transparent dark:focus:border-blue-400 dark:placeholder:text-white focus:outline-none placeholder:text-sm focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white border-gray-300 rounded-md dark:text-white"
                 />
                 <span
                   className="absolute top-7 right-4 cursor-pointer"
                   onClick={handleShowPassword}
                 >
-                  {showPassword
+                  {showpassword
                     ? utils.eyeIcon(20, 20, "text-gray-800 dark:text-white")
                     : utils.eyeslashIcon(
                         20,
@@ -137,7 +128,7 @@ const Register = () => {
                 </span>
               </div>
               {errors.password && (
-                <p className="text-red-500 dark:text-red-300 mt-2 text-xs">
+                <p className="text-red-500 dark:text-red-300 mt-2 text-xs font-medium">
                   {errors.password.message}
                 </p>
               )}
@@ -150,14 +141,14 @@ const Register = () => {
                 <input
                   {...register("confirmpassword")}
                   placeholder="Re-enter password"
-                  type={showConfirmPwd ? "text" : "password"}
-                  className="border placeholder-gray-400 focus:outline-none placeholder:text-sm focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white dark:bg-transparent dark:focus:border-blue-400 dark:text-white border-gray-300 rounded-md"
+                  type={showConfirmpassword ? "text" : "password"}
+                  className="border font-medium placeholder-gray-400 focus:outline-none placeholder:text-sm focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 text-base block bg-white dark:bg-transparent dark:focus:border-blue-400 dark:text-white border-gray-300 rounded-md"
                 />
                 <span
                   className="absolute top-7 right-4 cursor-pointer"
                   onClick={handleShowConfirmPwd}
                 >
-                  {showConfirmPwd
+                  {showConfirmpassword
                     ? utils.eyeIcon(20, 20, "text-gray-800 dark:text-white")
                     : utils.eyeslashIcon(
                         20,
@@ -167,7 +158,7 @@ const Register = () => {
                 </span>
               </div>
               {errors.confirmpassword && (
-                <p className="text-red-500 dark:text-red-300 mt-2 text-xs">
+                <p className="text-red-500 dark:text-red-300 mt-2 text-xs font-medium">
                   {errors.confirmpassword.message}
                 </p>
               )}
@@ -177,16 +168,18 @@ const Register = () => {
                 type="submit"
                 className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-slate-800 uppercase tracking-widest rounded-lg transition duration-200 hover:bg-black ease"
               >
-                Create Account
+                {loading ? <Spinner color={"white"} /> : "Create account"}
               </button>
             </div>
             <div className="relative inline-flex gap-2 items-center justify-center mx-auto w-full">
-              <p className="dark:text-white">Already have an account? </p>
+              <p className="dark:text-white font-medium">
+                Already have an account?{" "}
+              </p>
               <Link
                 href={CONST.Routes.LOGIN}
-                className="text-blue-400 hover:text-blue-600"
+                className="text-blue-400 hover:text-blue-600 uppercase tracking-widest"
               >
-                Sign in here
+                Sign in
               </Link>
             </div>
           </form>
