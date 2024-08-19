@@ -1,21 +1,26 @@
-import { localStorage } from "@/utils";
 import axios from "axios";
+import { localStorage } from "@/utils";
 
-const baseApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-    timeout: 15000,
-  },
-});
+const getAxiosInstance = () => {
+  const defaultOptions = {
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    timeout: 10000,
+  };
 
-baseApi.interceptors.request.use((config) => {
-  const bearerToken = localStorage.getAuthToken();
-  if (bearerToken) {
-    config.headers.Authorization = bearerToken ? bearerToken : "";
-    config.headers["x-access-token"] = bearerToken ? bearerToken : "";
-  }
-  return config;
-});
+  let instance = axios.create(defaultOptions);
 
-export default baseApi;
+  instance.interceptors.request.use(
+    function (config) {
+      const token = localStorage.getAuthToken();
+      config.headers.Authorization = token ? token : "";
+      return config;
+    },
+    (error) => {
+      console.log("instanceerror::", error);
+      return Promise.reject(error);
+    }
+  );
+  return instance;
+};
+
+export default getAxiosInstance();

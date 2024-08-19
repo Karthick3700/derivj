@@ -5,26 +5,13 @@ import "react-toastify/dist/ReactToastify.css";
 import Layout from "./Layout";
 import { useRouter } from "next/router";
 import Loading from "@/components/loading";
-import { Provider, useSelector } from "react-redux";
+import { Provider } from "react-redux";
 import store from "@/redux/store";
-import { CONST, localStorage } from "@/utils";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 
-
-function MyApp({ Component, pageProps }) {
+export default function App({ Component, pageProps }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const isAuthenticated = useSelector((state) => state.user?.isLoggedIn);
-
-  useEffect(() => {
-    const theme = localStorage.getTheme();
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
 
   useEffect(() => {
     let timer;
@@ -54,19 +41,6 @@ function MyApp({ Component, pageProps }) {
     };
   }, [router]);
 
-  const publicRoutes = [
-    CONST.Routes.MAIN,
-    CONST.Routes.SIGN_UP,
-    CONST.Routes.LOGIN,
-  ];
-
-  useEffect(() => {
-    if (!isAuthenticated && !publicRoutes.includes(router.pathname)) {
-      router.push(CONST.Routes.LOGIN);
-    }
-  }, [isAuthenticated, router.pathname]);
-  console.log("route::", router.pathname);
-
   return (
     <Fragment>
       <Head>
@@ -75,9 +49,7 @@ function MyApp({ Component, pageProps }) {
         <meta name="viewport" content="initial-scale=1.0, initial-scale=1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </Head>
-
-      <ErrorBoundary>
-
+      <Provider store={store}>
         <Layout>
           {isLoading ? (
             <div className="flex justify-center items-center w-full min-h-screen">
@@ -87,15 +59,6 @@ function MyApp({ Component, pageProps }) {
             <Component {...pageProps} />
           )}
         </Layout>
-      </ErrorBoundary>
-    </Fragment>
-  );
-}
-export default function App(appProps) {
-  return (
-    <Fragment>
-      <Provider store={store}>
-        <MyApp {...appProps} />
       </Provider>
     </Fragment>
   );

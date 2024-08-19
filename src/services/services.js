@@ -1,12 +1,10 @@
-import baseApi from "./axios";
+import axios from "./axios";
 
 const Services = {
   post: async function (authUrl, payload) {
-    return baseApi
+    return axios
       .post(authUrl, payload)
       .then((resp) => {
-        console.log("response::", resp);
-        console.log("Apiresponse::", resp.data);
         return resp.data;
       })
       .catch((error) => {
@@ -15,10 +13,9 @@ const Services = {
   },
 
   get: async function (url) {
-    return baseApi
+    return axios
       .get(url)
       .then((resp) => {
-        console.log("Apiresponse::", resp.data);
         return resp.data;
       })
       .catch((error) => {
@@ -27,10 +24,9 @@ const Services = {
   },
 
   put: async function (url, payload) {
-    return baseApi
+    return axios
       .put(url, payload)
       .then((resp) => {
-        console.log("Apiresponse::", resp.data);
         return resp.data;
       })
       .catch((error) => {

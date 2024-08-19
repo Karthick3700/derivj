@@ -1,21 +1,46 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { CONST, utils } from "@/utils";
+import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { darkMode, menuHandler } from "@/redux/localstore/localSlice";
 
 const HeaderBeforeLogin = () => {
-  const menuOpen = useSelector((state) => state.local.isNavOpen);
-
-  const dispatch = useDispatch();
+  const [dark, setDark] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleMenuClick = () => {
-    dispatch(menuHandler());
+    setMenuOpen(!menuOpen);
   };
 
   const darkModeHandler = () => {
-    dispatch(darkMode());
+    const newTheme = !dark;
+    setDark(newTheme);
+
+    localStorage.setTheme(newTheme ? "dark" : "light");
+
+    if (newTheme) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   };
+
+  useEffect(() => {
+    const storedTheme = localStorage.getTheme("theme");
+    if (storedTheme === "dark") {
+      setDark(true);
+      document.documentElement.classList.add("dark");
+    } else {
+      setDark(false);
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [menuOpen]);
 
   useEffect(() => {
     if (menuOpen) {

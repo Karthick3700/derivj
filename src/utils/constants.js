@@ -2,7 +2,6 @@ export const Routes = {
   MAIN: "/",
   LOGIN: "/auth-login",
   SIGN_UP: "/auth-register",
-  PROFILE: "/profile",
 };
 
 export const MSG = {
@@ -128,9 +127,4 @@ export const MSG = {
 
   REQ_SUBJECT: "Subject",
   REQ_CONTENT: "Content",
-};
-
-export const RESP_CODE = {
-  SUCCESS: 200,
-  SUCCESS_CODE: 201,
 };

@@ -1,29 +1,27 @@
-import { localStorage } from "@/utils";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  isDarkMode: false,
   isLoggedIn: false,
-  isSignUp: false,
   user: null,
   token: null,
-  isNew: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    mode: (state) => (state.isDarkMode = !state.isDarkMode),
     login: (state, action) => {
       state.isLoggedIn = true;
-      state.user = action?.payload;
-      state.token = state.user?.token;
-      localStorage.setAuthToken(state.token ? state.token : "");
+      state.user = action.payload;
     },
-    logout: (state) => {
+    logOut: (state) => {
       state.isLoggedIn = false;
+      state.user = null;
     },
   },
 });
-export const { start, success, login, logout, darkmode } = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 
 export default authSlice.reducer;

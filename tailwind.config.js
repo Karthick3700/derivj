@@ -14,7 +14,6 @@ module.exports = {
       padding: "1rem",
     },
     extend: {
-      transitionProperty:['dark'],
       fontFamily: {
         sans: ["Plus Jakarta Sans", "sans-serif"],
         deca: ["Lexend Deca", "sans-serif"],
