@@ -1,4 +1,4 @@
-const Loading = () => {
+const GlobalLoading = () => {
   return (
     <div className="flex flex-col gap-4 w-full items-center justify-center">
       <div className="w-20 h-20 border-4 border-transparent animate-spin flex items-center justify-center rounded-full dark:border-t-white border-t-[#000]">
@@ -8,4 +8,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default GlobalLoading;

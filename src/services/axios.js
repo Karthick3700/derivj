@@ -1,26 +1,34 @@
+import { CONST, localStorage } from "@/utils";
 import axios from "axios";
-import { localStorage } from "@/utils";
 
-const getAxiosInstance = () => {
-  const defaultOptions = {
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
-    timeout: 10000,
-  };
+const baseApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-  let instance = axios.create(defaultOptions);
+baseApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getAuthToken();
+    config.headers.Authorization = token ? `Bearer ${token}` : "";
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-  instance.interceptors.request.use(
-    function (config) {
-      const token = localStorage.getAuthToken();
-      config.headers.Authorization = token ? token : "";
-      return config;
-    },
-    (error) => {
-      console.log("instanceerror::", error);
-      return Promise.reject(error);
+baseApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === CONST.status.UNAUTHORIZED) {
+      store.dispatch(logout());
+      localStorage.removeAuthToken();
+      window.location.href = CONST.Routes.LOGIN;
     }
-  );
-  return instance;
-};
+    return Promise.reject(error);
+  }
+);
 
-export default getAxiosInstance();
+export default baseApi;

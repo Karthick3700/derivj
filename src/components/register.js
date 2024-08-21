@@ -1,56 +1,42 @@
 import { services } from "@/services";
-import { CONST, utils } from "@/utils";
+import { CONST, utils, validator } from "@/utils";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import { SIGN_UP } from "@/services/api-url.service";
 import { useRouter } from "next/router";
-
-const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .required()
-    .min(3, CONST.MSG.MIN_CHAR)
-    .trim("")
-    .matches(CONST.MSG.NAME_REGEX, CONST.MSG.INVALID_NAME)
-    .label(CONST.MSG.REQ_NAME),
-  email: Yup.string()
-    .email(CONST.MSG.INVALID_EMAIL)
-    .label(CONST.MSG.REQ_EMAIL)
-    .required(),
-  password: Yup.string()
-    .label(CONST.MSG.REQ_PWD)
-    .required()
-    .matches(CONST.MSG.PASSWORD_REGEX_EXP, CONST.MSG.PASSWORD_REGEX_MSG),
-
-  confirmpassword: Yup.string()
-    .label(CONST.MSG.REQ_CONFIRM_PASSWORD)
-    .required()
-    .oneOf([Yup.ref("password")], CONST.MSG.REQ_PASSWORD_NOT_MATCH),
-});
+import { useDispatch, useSelector } from "react-redux";
+import {
+  toggleSignupConfirmpwd,
+  toggleSignupShowpwd,
+} from "@/redux/local/localSlice";
 
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+  const dispatch = useDispatch();
   const router = useRouter();
+  const showPassword = useSelector((state) => state.local?.signupShowpwd);
+  const showConfirmPwd = useSelector((state) => state.local?.signupConfirmpwd);
 
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  const handleShowConfirmPwd = () => {
-    setShowConfirmPwd(!showConfirmPwd);
-  };
+  const handleShowPassword = useCallback(() => {
+    dispatch(toggleSignupShowpwd());
+  }, [dispatch]);
+
+  const handleShowConfirmPwd = useCallback(() => {
+    dispatch(toggleSignupConfirmpwd());
+  }, [dispatch]);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({ mode: "onChange", resolver: yupResolver(validationSchema) });
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(validator.registerSchema),
+  });
 
   const onSubmitSignup = async (data) => {
-    
     const { name, email, password } = data;
     const payload = { name, email, password };
 

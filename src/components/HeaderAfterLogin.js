@@ -1,38 +1,31 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect } from "react";
 import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleMenu, toggleMode } from "@/redux/local/localSlice";
+import { useRouter } from "next/router";
+import { logout } from "@/redux/auth/authSlice";
 
 const HeaderAfterLogin = () => {
-  const [dark, setDark] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const dark = useSelector((state) => state.local?.isDarkMode);
+  const menuOpen = useSelector((state) => state.local?.isMenuOpen);
 
-  const handleMenuClick = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const handleMenuClick = useCallback(() => {
+    dispatch(toggleMenu());
+  }, [dispatch]);
 
-  const darkModeHandler = () => {
+  const darkModeHandler = useCallback(() => {
     const newTheme = !dark;
-    setDark(newTheme);
-
+    dispatch(toggleMode());
     localStorage.setTheme(newTheme ? "dark" : "light");
-
     if (newTheme) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  };
-
-  useEffect(() => {
-    const storedTheme = localStorage.getTheme("theme");
-    if (storedTheme === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  }, [dispatch, dark]);
 
   useEffect(() => {
     if (menuOpen) {
@@ -43,12 +36,16 @@ const HeaderAfterLogin = () => {
   }, [menuOpen]);
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = menuOpen ? "hidden" : "";
   }, [menuOpen]);
+
+  const handleLogout = useCallback(() => {
+    dispatch(logout());
+    router.push(CONST.Routes.LOGIN);
+    utils.handleSuccess(CONST.MSG.LOGOUT_SUCCESS);
+  }, [dispatch, router, utils]);
+
+  
 
   return (
     <Fragment>
@@ -59,12 +56,15 @@ const HeaderAfterLogin = () => {
             derivJ
           </div>
         </Link>
-        <div className="inline-flex gap-12">
+        <div className="inline-flex gap-8 items-center justify-center">
           <button
             className="md:hidden dark:bg-transparent"
             onClick={darkModeHandler}
           >
             {utils.theme(40, 40)}
+          </button>
+          <button className="md:hidden" onClick={handleLogout}>
+            {utils.LogoutIcon(36, 36, "text-black dark:text-white")}
           </button>
           {menuOpen ? (
             <Fragment>
@@ -102,22 +102,24 @@ const HeaderAfterLogin = () => {
                 Contact
               </Link>
             </li>
+            <li>
+              <Link
+                href={CONST.Routes.PROFILE}
+                className="relative flex items-center gap-2 cursor-pointer rounded dark:hover:bg-secondary-dark hover:bg-gray-100 dark:hover:text-black p-4 transition-all text-lg font-semibold"
+              >
+                Profile
+              </Link>
+            </li>
           </ul>
           <div className="flex gap-4">
             <button onClick={darkModeHandler}>{utils.theme(32, 32)}</button>
             <div className="flex justify-center items-center gap-4">
-              <Link
-                href={CONST.Routes.SIGN_UP}
-                className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
+              <button
+                onClick={handleLogout}
+                className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
               >
-                SIGN UP
-              </Link>
-              <Link
-                href={CONST.Routes.LOGIN}
-                className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
-              >
-                SIGN IN
-              </Link>
+                log out
+              </button>
             </div>
           </div>
         </div>
@@ -146,18 +148,10 @@ const HeaderAfterLogin = () => {
                 Contact
               </Link>
               <Link
-                href={CONST.Routes.SIGN_UP}
-                onClick={handleMenuClick}
-                className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
+                href={CONST.Routes.PROFILE}
+                className="relative flex items-center gap-2 cursor-pointer rounded dark:hover:bg-secondary-dark hover:bg-gray-100 dark:hover:text-black p-4 transition-all text-lg font-semibold"
               >
-                SIGN UP
-              </Link>
-              <Link
-                href={CONST.Routes.LOGIN}
-                onClick={handleMenuClick}
-                className="px-6 py-3 border rounded-full text-sm tracking-widest font-semibold bg-black dark:bg-white dark:text-black text-white whitespace-nowrap"
-              >
-                SIGN IN
+                Profile
               </Link>
             </div>
           </div>

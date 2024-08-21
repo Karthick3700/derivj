@@ -1,3 +1,4 @@
-export * as utils from "@/utils/utils";
-export * as localStorage from "@/utils/localstorage";
-export * as CONST from "@/utils/constants"
+export * as utils from "./utils";
+export * as localStorage from "./localstorage";
+export * as CONST from "./constants";
+export * as validator from "./validator";

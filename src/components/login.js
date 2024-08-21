@@ -1,55 +1,58 @@
-import React, { Fragment, useState } from "react";
+"use client";
+import React, { useCallback } from "react";
 import Link from "next/link";
-import { CONST, utils } from "@/utils";
+import { CONST, utils, validator } from "@/utils";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import { services } from "@/services";
+import { service, services } from "@/services";
 import { LOG_IN } from "@/services/api-url.service";
 import { useRouter } from "next/router";
-
-const validationSchema = Yup.object().shape({
-  email: Yup.string()
-    .email(CONST.MSG.INVALID_EMAIL)
-    .label(CONST.MSG.REQ_EMAIL)
-    .required(),
-  password: Yup.string()
-    .label(CONST.MSG.REQ_PWD)
-    .required()
-    .matches(CONST.MSG.PASSWORD_REGEX_EXP, CONST.MSG.PASSWORD_REGEX_MSG),
-});
+import { useDispatch, useSelector } from "react-redux";
+import { toggleLoginShowpwd } from "@/redux/local/localSlice";
+import { loading, login } from "@/redux/auth/authSlice";
+import Loading from "./loader";
 
 const Login = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state?.user?.isLoading);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({ mode: "onChange", resolver: yupResolver(validationSchema) });
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(validator.loginSchema),
+  });
 
-  const [showPassword, setShowPassword] = useState(false);
+  const showPassword = useSelector((state) => state.local?.loginShowpwd);
+
+  const handleShowPassword = useCallback(() => {
+    dispatch(toggleLoginShowpwd());
+  }, [dispatch]);
 
   const handleLoginSubmit = async (data) => {
+    dispatch(loading(true));
     const { email, password } = data;
     const payload = { email, password };
     try {
-      const resp = await services.post(LOG_IN, payload);
-      
-      if (resp?.statusCode === 200) {
-        utils.handleSuccess(resp?.message);
-        router.push(CONST.Routes.MAIN);
+      const resp = await service.post(LOG_IN, payload);
+
+      if (resp?.statusCode === CONST.status.SUCCESS) {
+        utils.handleSuccess(CONST.MSG.LOGIN_SUCCESS);
+        dispatch(login(resp?.doc));
+
+        router.push(CONST.Routes.PROFILE);
       } else {
-        utils.handleError(resp?.message);
+        utils.handleError(resp.message);
       }
-      reset();
     } catch (error) {
       console.log("error", error);
+    } finally {
+      dispatch(loading(false));
+      reset();
     }
-  };
-
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
   };
 
   return (
@@ -121,7 +124,7 @@ const Login = () => {
                 className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-slate-800 uppercase tracking-widest
               rounded-lg transition duration-200 hover:bg-black ease dark:bg-gray-900 dark:hover:bg-black"
               >
-                log in
+                {isLoading ? <Loading width="w-8" height="h-8" /> : "log in"}
               </button>
             </div>
             <div className="relative inline-flex gap-2 items-center justify-center mx-auto w-full dark:text-gray-200">

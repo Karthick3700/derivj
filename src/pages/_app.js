@@ -1,17 +1,29 @@
+import 'flowbite/dist/flowbite.css';
 import "@/styles/globals.css";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "./Layout";
 import { useRouter } from "next/router";
-import Loading from "@/components/loading";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { localStorage } from "@/utils";
+import GlobalLoading from "@/components/loading";
 
-
-export default function App({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  
+
+  useEffect(() => {
+    const theme = localStorage.getTheme();
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
 
   useEffect(() => {
     let timer;
@@ -49,17 +61,26 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="initial-scale=1.0, initial-scale=1" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </Head>
-      <Provider store={store}>
+
+      <ErrorBoundary>
         <Layout>
           {isLoading ? (
             <div className="flex justify-center items-center w-full min-h-screen">
-              <Loading />
+              <GlobalLoading />
             </div>
           ) : (
             <Component {...pageProps} />
           )}
         </Layout>
-      </Provider>
+      </ErrorBoundary>
     </Fragment>
+  );
+}
+
+export default function App(appProps) {
+  return (
+    <Provider store={store}>
+      <MyApp {...appProps} />
+    </Provider>
   );
 }

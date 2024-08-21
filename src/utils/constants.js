@@ -2,9 +2,11 @@ export const Routes = {
   MAIN: "/",
   LOGIN: "/auth-login",
   SIGN_UP: "/auth-register",
+  PROFILE: "/profile",
 };
 
 export const MSG = {
+  LOGIN_SUCCESS:"Login successfully",
   LOGOUT_SUCCESS: "Logout successfully",
 
   REQ_EMAIL: "Email",
@@ -127,4 +129,10 @@ export const MSG = {
 
   REQ_SUBJECT: "Subject",
   REQ_CONTENT: "Content",
+};
+
+export const status = {
+  SUCCESS: 200,
+  SUCCESSCODE: 201,
+  UNAUTHORIZED:401
 };

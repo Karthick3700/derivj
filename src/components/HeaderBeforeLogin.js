@@ -1,38 +1,28 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect} from "react";
 import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleMenu, toggleMode } from "@/redux/local/localSlice";
 
 const HeaderBeforeLogin = () => {
-  const [dark, setDark] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const dark = useSelector((state) => state.local?.isDarkMode);
+  const menuOpen = useSelector((state) => state.local?.isMenuOpen);
 
-  const handleMenuClick = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const handleMenuClick = useCallback(() => {
+    dispatch(toggleMenu());
+  }, [dispatch]);
 
-  const darkModeHandler = () => {
+  const darkModeHandler = useCallback(() => {
     const newTheme = !dark;
-    setDark(newTheme);
-
+    dispatch(toggleMode());
     localStorage.setTheme(newTheme ? "dark" : "light");
-
     if (newTheme) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  };
-
-  useEffect(() => {
-    const storedTheme = localStorage.getTheme("theme");
-    if (storedTheme === "dark") {
-      setDark(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
+  }, [dispatch, dark]);
 
   useEffect(() => {
     if (menuOpen) {
@@ -43,11 +33,7 @@ const HeaderBeforeLogin = () => {
   }, [menuOpen]);
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = menuOpen ? "hidden" : "";
   }, [menuOpen]);
 
   return (
