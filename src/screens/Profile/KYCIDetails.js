@@ -23,7 +23,7 @@ const KYCIDetails = () => {
             />
           </div>
         </div>
-        <div className="flex gap-8">
+        <div className="flex flex-col md:flex-row gap-8">
           <div className="relative w-full md:w-6/12 flex flex-col gap-2">
             <p className="bg-transparent rounded-b-sm  pt-2 pr-2 pb-1 pl-2 -mt-3 mr-0 mb-0 ml-2 font-semibold text-slate-700   dark:text-gray-400 ">
               Document No<span className="text-red-700">*</span>

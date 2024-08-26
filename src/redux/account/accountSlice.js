@@ -65,6 +65,8 @@ const accountSlice = createSlice({
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.profileData = action.payload;
+        state.imagePath = action.payload?.imageId?.imagePath || null;
+        state.imageId = action.payload?.imageId?._id || null;
         state.isDisabled = true;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {

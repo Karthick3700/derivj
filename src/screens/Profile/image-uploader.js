@@ -5,9 +5,8 @@ import { useSelector } from "react-redux";
 
 const ImageUploader = () => {
   const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_URL || "";
-  const path = useSelector(
-    (state) => state?.profile?.profileData?.imageId?.imagePath
-  );
+  const path = useSelector((state) => state?.profile?.imagePath);
+  console.log("path::", path);
 
   const [avatarurl, setAvatarUrl] = useState(defaultImage);
 
