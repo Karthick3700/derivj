@@ -6,9 +6,10 @@ export const Routes = {
 };
 
 export const MSG = {
-  LOGIN_SUCCESS:"Login successfully",
+  LOGIN_SUCCESS: "Login successfully",
   LOGOUT_SUCCESS: "Logout successfully",
 
+  REQ_IMAGE: "Profile Image",
   REQ_EMAIL: "Email",
   INVALID_EMAIL: "Invalid email",
   REQ_PWD: "Password",
@@ -134,5 +135,31 @@ export const MSG = {
 export const status = {
   SUCCESS: 200,
   SUCCESSCODE: 201,
-  UNAUTHORIZED:401
+  UNAUTHORIZED: 401,
+};
+export const KYC_VERIFY = {
+  VERIFY: 1,
+  UN_VERIFY: 3,
+  REJECTED: 0,
+  PROCESSING: 2,
+
+  BASIC_VERIFY: 10,
+  PAN_VERIFY: 20,
+  AADHAR_VERIFY: 30,
+};
+export const USER_STATUS = {
+  PROCESS: 0,
+  ACTIVE: 1,
+  DE_ACTIVE: 2,
+};
+
+export const STEP = 1;
+export const VERIFY_KYC_STEPS = {
+  IDENTIFICATION_DETAILS: 10,
+  PAN_DETAILS: 20,
+  AADHAR_DETAILS: 30,
+
+  KYC_DETAILS: 10,
+  ADDRESS_DETAILS: 20,
+  BANK_DETAILS: 30,
 };

@@ -1,8 +1,5 @@
-import {
-  fetchUserProfile,
-  loadCommonData,
-  setMount,
-} from "@/redux/auth/authSlice";
+import { fetchUserProfile } from "@/redux/account/accountBuilder";
+import { loadCommonData, setMount } from "@/redux/auth/authSlice";
 import React, { Fragment, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,7 +13,7 @@ const PostLogin = ({ children }) => {
         dispatch(setMount(true));
       }
 
-      if (isMounted && isLoggedIn && isNew) {
+      if (isMounted && isLoggedIn && isNew !== null) {
         dispatch(fetchUserProfile());
       }
     };

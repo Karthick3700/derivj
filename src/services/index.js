@@ -1,1 +1,1 @@
-export { default as service} from "@/services/services";
+export { default as service } from "./services";

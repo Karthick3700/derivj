@@ -4,13 +4,13 @@ import Link from "next/link";
 import { CONST, utils, validator } from "@/utils";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { service, services } from "@/services";
 import { LOG_IN } from "@/services/api-url.service";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleLoginShowpwd } from "@/redux/local/localSlice";
 import { loading, login } from "@/redux/auth/authSlice";
 import Loading from "./loader";
+import { service } from "@/services";
 
 const Login = () => {
   const router = useRouter();
@@ -40,12 +40,12 @@ const Login = () => {
       const resp = await service.post(LOG_IN, payload);
 
       if (resp?.statusCode === CONST.status.SUCCESS) {
-        utils.handleSuccess(CONST.MSG.LOGIN_SUCCESS);
+        utils.showSuccessMsg(CONST.MSG.LOGIN_SUCCESS);
         dispatch(login(resp?.doc));
 
         router.push(CONST.Routes.PROFILE);
       } else {
-        utils.handleError(resp.message);
+        utils.showErrorMsg(resp.message);
       }
     } catch (error) {
       console.log("error", error);

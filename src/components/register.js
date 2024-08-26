@@ -1,7 +1,6 @@
-import { services } from "@/services";
 import { CONST, utils, validator } from "@/utils";
 import Link from "next/link";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SIGN_UP } from "@/services/api-url.service";
@@ -11,6 +10,7 @@ import {
   toggleSignupConfirmpwd,
   toggleSignupShowpwd,
 } from "@/redux/local/localSlice";
+import { service } from "@/services";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -41,12 +41,12 @@ const Register = () => {
     const payload = { name, email, password };
 
     try {
-      const resp = await services.post(SIGN_UP, payload);
+      const resp = await service.post(SIGN_UP, payload);
       if (resp?.statusCode === 200) {
-        utils.handleSuccess(resp?.message);
+        utils.showSuccessMsg(resp?.message);
         router.push(CONST.Routes.LOGIN);
       } else {
-        utils.handleError(resp?.message);
+        utils.showErrorMsg(resp?.message);
       }
 
       reset();

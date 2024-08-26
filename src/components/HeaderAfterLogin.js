@@ -42,10 +42,8 @@ const HeaderAfterLogin = () => {
   const handleLogout = useCallback(() => {
     dispatch(logout());
     router.push(CONST.Routes.LOGIN);
-    utils.handleSuccess(CONST.MSG.LOGOUT_SUCCESS);
+    utils.showSuccessMsg(CONST.MSG.LOGOUT_SUCCESS);
   }, [dispatch, router, utils]);
-
-  
 
   return (
     <Fragment>
@@ -134,14 +132,14 @@ const HeaderAfterLogin = () => {
           >
             <div className="flex flex-col gap-8 items-center justify-center min-h-[90dvh] ">
               <Link
-                href=""
+                href="/"
                 className="text-lg font-semibold text-black dark:text-white mb-4"
                 onClick={handleMenuClick}
               >
                 About
               </Link>
               <Link
-                href=""
+                href="/"
                 className="text-lg font-semibold text-black dark:text-white mb-4"
                 onClick={handleMenuClick}
               >
@@ -149,7 +147,8 @@ const HeaderAfterLogin = () => {
               </Link>
               <Link
                 href={CONST.Routes.PROFILE}
-                className="relative flex items-center gap-2 cursor-pointer rounded dark:hover:bg-secondary-dark hover:bg-gray-100 dark:hover:text-black p-4 transition-all text-lg font-semibold"
+                className="text-lg font-semibold text-black dark:text-white mb-4"
+                onClick={handleMenuClick}
               >
                 Profile
               </Link>

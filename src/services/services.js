@@ -1,15 +1,19 @@
-import baseApi from "./axios";
 
-const Services = {
+import { baseApi, imageApi } from "./axios";
+import { utils } from "@/utils";
+
+
+const service = {
   post: async function (authUrl, payload) {
     return baseApi
       .post(authUrl, payload)
       .then((resp) => {
-        console.log("response::",resp.data)
+        console.log("response::", resp.data);
         return resp.data;
       })
       .catch((error) => {
         console.log("err::", error);
+        utils.showErrorMsg(utils.handleError(error));
       });
   },
 
@@ -22,6 +26,7 @@ const Services = {
       })
       .catch((error) => {
         console.log("error::", error);
+        utils.showErrorMsg(utils.handleError(error));
       });
   },
 
@@ -34,8 +39,22 @@ const Services = {
       })
       .catch((error) => {
         console.log("error::", error);
+        utils.showErrorMsg(utils.handleError(error));
+      });
+  },
+
+  imageUpload: async function (url, formData) {
+    return imageApi
+      .post(url, formData)
+      .then((resp) => {
+        console.log("responseData::", resp?.data);
+        return resp?.data;
+      })
+      .catch((error) => {
+        console.log("Error::", error);
+        utils.showErrorMsg(utils.handleError(error));
       });
   },
 };
 
-export default Services;
+export default service;
