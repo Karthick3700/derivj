@@ -1,11 +1,13 @@
 import { fetchUserProfile } from "@/redux/account/accountBuilder";
-import { loadCommonData, setMount } from "@/redux/auth/authSlice";
-import React, { Fragment, useEffect, useRef } from "react";
+import { setMount, updateStep } from "@/redux/auth/authSlice";
+import React, { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const PostLogin = ({ children }) => {
   const dispatch = useDispatch();
   const { isLoggedIn, isNew, isMounted } = useSelector((state) => state?.user);
+  const updatedStep = useSelector((state) => state?.profile?.updatedStep);
+  const step = useSelector((state) => state?.user?.step);
 
   useEffect(() => {
     const initialize = async () => {
@@ -14,12 +16,16 @@ const PostLogin = ({ children }) => {
       }
 
       if (isMounted && isLoggedIn && isNew !== null) {
-        dispatch(fetchUserProfile());
+        await dispatch(fetchUserProfile());
+      }
+
+      if (isLoggedIn && (step < updatedStep || step === null)) {
+        dispatch(updateStep(updatedStep));
       }
     };
 
     initialize();
-  }, [isMounted, isLoggedIn, isNew, dispatch]);
+  }, [isMounted, isLoggedIn, isNew, dispatch, step, updatedStep]);
 
   return <Fragment>{children}</Fragment>;
 };

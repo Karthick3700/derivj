@@ -10,6 +10,9 @@ export const MSG = {
   LOGOUT_SUCCESS: "Logout successfully",
 
   REQ_IMAGE: "Profile Image",
+  REQ_KYC_IMAGE: "Document Image",
+  REQ_FRONT_IMAGE: "Document Front Image",
+  REQ_BACK_IMAGE: "Document Back Image",
   REQ_EMAIL: "Email",
   INVALID_EMAIL: "Invalid email",
   REQ_PWD: "Password",
@@ -88,8 +91,8 @@ export const MSG = {
   REQ_IMAGE_PROOF: "Profile image is required field",
   REQ_TRANS_PROOF_ID: "Transaction proof is required field",
   REQ_TRANS_ID: "Transaction ID",
-  REQ_FRONT_AADHAR_IMG: "Aadhar front proof is required field",
-  REQ_BACK_AADHAR_IMG: "Aadhar back proof is required field",
+  REQ_FRONT_AADHAR_IMG: "Aadhar front proof",
+  REQ_BACK_AADHAR_IMG: "Aadhar back proof",
   REQ_AADHAR_ADDRESS: "Aadhar address is required field",
   REQ_CURRENCY_PREFERENCE: "Currency preference",
 
@@ -152,7 +155,7 @@ export const USER_STATUS = {
   ACTIVE: 1,
   DE_ACTIVE: 2,
 };
-
+export const DEFAULT_STEP = 0;
 export const STEP = 1;
 export const VERIFY_KYC_STEPS = {
   IDENTIFICATION_DETAILS: 10,

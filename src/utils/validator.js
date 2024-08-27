@@ -71,3 +71,36 @@ export const profileSchema = Yup.object().shape({
       .required(),
   }),
 });
+
+export const KYCSchema = Yup.object().shape({
+  documentId: Yup.string().label(CONST.MSG.REQ_KYC_IMAGE).required(),
+  documentNo: Yup.string()
+    .label(CONST.MSG.REQ_PAN_NUM)
+    .required()
+    .matches(CONST.MSG.PAN_REGEX, CONST.MSG.INVALID_PAN)
+    .max(10, CONST.MSG.MAXIMUM_PAN),
+  reDocumentNo: Yup.string()
+    .oneOf([Yup.ref("documentNo")], CONST.MSG.REQ_RE_ENETER_PAN_NOT_MATCH)
+    .label(CONST.MSG.REQ_PAN_NUM)
+    .max(10, CONST.MSG.MAXIMUM_PAN)
+    .required(),
+});
+
+export const addressSchema = Yup.object().shape({
+  documentFrontId: Yup.string().label(CONST.MSG.REQ_FRONT_AADHAR_IMG).required(),
+  documentBackId: Yup.string().label(CONST.MSG.REQ_BACK_AADHAR_IMG).required(),
+  documentNo: Yup.string()
+    .label(CONST.MSG.REQ_AADHAR)
+    .required()
+    .min(12, CONST.MSG.MIN_AADHAR),
+  reEnterDocumentNo: Yup.string()
+    .oneOf([Yup.ref("documentNo")], CONST.MSG.RE_ENTER_AADHAR_NOT_MATCH)
+    .label(CONST.MSG.REQ_AADHAR)
+    .min(12, CONST.MSG.MIN_AADHAR)
+    .required(),
+  flotNo: Yup.string().label(CONST.MSG.REQ_DOOR_NO).required(),
+  street: Yup.string().label(CONST.MSG.REQ_STREET).required(),
+  city: Yup.string().label(CONST.MSG.REQ_CITY).required(),
+  state: Yup.string().label(CONST.MSG.REQ_STATE).required(),
+  pincode: Yup.string().label(CONST.MSG.REQ_PINCODE).required().max(10),
+});

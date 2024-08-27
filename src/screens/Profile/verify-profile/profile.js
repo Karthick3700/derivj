@@ -1,7 +1,7 @@
 import { Datepicker } from "flowbite-react";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ImageUploader from "./image-uploader";
+import ImageUploader from "../image-uploader";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { profileSchema } from "@/utils/validator";

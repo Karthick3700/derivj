@@ -23,7 +23,7 @@ export const fileSize = () => 2048000;
 export const imageFilevalidation = (file) => {
   const validFileExtensions = ["jpg", "gif", "png", "jpeg", "svg", "webp"];
 
-  if (file) {
+  if (file && file.name) {
     const fileExtension = file.name.split(".").pop().toLowerCase();
 
     return validFileExtensions.includes(fileExtension);

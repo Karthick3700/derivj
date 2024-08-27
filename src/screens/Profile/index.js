@@ -2,10 +2,10 @@
 import React, { Fragment, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { CONST, utils } from "@/utils";
-import UserProfile from "./profile";
-import KYCIDetails from "./KYCIDetails";
-import AddressDetails from "./AddressDetails";
-import BankDetails from "./BankDetails";
+import UserProfile from "./verify-profile/profile";
+import KYCIDetails from "./verify-profile/KYCIDetails";
+import AddressDetails from "./verify-profile/AddressDetails";
+import BankDetails from "./verify-profile/BankDetails";
 import { useRouter } from "next/router";
 import { logout } from "@/redux/auth/authSlice";
 import Dashboard from "./dashboard";

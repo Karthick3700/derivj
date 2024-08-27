@@ -3,8 +3,6 @@ import { CONST, localStorage, utils } from "@/utils";
 import { service } from "@/services";
 import { USER_PROFILE } from "@/services/api-url.service";
 
-
-
 const initialState = {
   isMounted: null,
   isLoading: false,
@@ -26,6 +24,9 @@ const authSlice = createSlice({
     setMount: (state, action) => {
       state.isMounted = action.payload;
     },
+    updateStep: (state, action) => {
+      state.step = action.payload;
+    },
 
     loading: (state, action) => {
       state.isLoading = action?.payload;
@@ -36,7 +37,7 @@ const authSlice = createSlice({
       state.user = payload;
       state.isNew = payload.isNew || false;
       state.token = payload.accessToken || null;
-      state.step = payload.step || null;
+      state.step = payload.step;
 
       localStorage.setAuthUser(state.user);
       localStorage.setAuthToken(state.token);
@@ -67,7 +68,6 @@ const authSlice = createSlice({
       localStorage.setAuthToken(state.token);
     },
   },
- 
 });
 
 export const {
@@ -79,6 +79,7 @@ export const {
   setError,
   updateUserRoles,
   refreshToken,
+  updateStep
 } = authSlice.actions;
 
 export default authSlice.reducer;

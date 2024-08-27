@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["image-api-wtie.onrender.com"],
+    remotePatterns: [
+      { protocol: "https", hostname: "image-api-wtie.onrender.com" },
+    ],
   },
 };
 
