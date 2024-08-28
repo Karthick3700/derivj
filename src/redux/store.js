@@ -4,8 +4,14 @@ import rootReducer from "./rootreducer";
 
 const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
-  devTools: process.env.NODE_MODE !== "production",
+  middleware: (getDefaultMiddleware) => {
+    const middlewares = getDefaultMiddleware();
+    if (process.env.NODE_ENV !== "production") {
+      middlewares.push(logger);
+    }
+    return middlewares;
+  },
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 export default store;
