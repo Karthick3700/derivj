@@ -1,3 +1,4 @@
+import { utils } from "@/utils";
 import Link from "next/link";
 import React from "react";
 
@@ -5,10 +6,12 @@ const Footer = () => {
   return (
     <footer className="w-full relative p-8 lg:p-20 mt-20 bg-footer-gradient dark:bg-none dark:border-t-white dark:border-t-[1px]  bg-cover bg-center rounded-t-xl">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-20 md:gap-4">
-        <div className="flex flex-col gap-4 w-full md:w-5/6 col-span-1">
-          <div className="flex gap-2 items-center justify-start">
-            <span className="text-black dark:text-white">Logo</span>
-            <h4 className="text-3xl italic font-bold text-black dark:text-white">derivJ</h4>
+        <div className="flex flex-col gap-4 w-full md:w-5/6 col-span-1 ">
+          <div className="flex items-center gap-2 md:ps-4 w-max">
+            {utils.Logo()}
+            <div className="text-xl md:text-2xl font-semibold font-deca  italic text-black dark:text-white">
+              derivJ
+            </div>
           </div>
           <p className="text-sm text-black dark:text-gray-300">
             derivJ is the global crypto exchange where users can Trade Bitcoin
@@ -18,7 +21,9 @@ const Footer = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 col-span-2 md:gap-4 gap-12">
           <div className="flex flex-col justify-start items-start gap-8">
-            <h4 className="text-2xl font-bold text-black dark:text-white">Menu</h4>
+            <h4 className="text-2xl font-bold text-black dark:text-white">
+              Menu
+            </h4>
             <ul className="flex flex-col gap-4">
               <li className="text-lg font-semibold text-black dark:text-white">
                 <Link href="#">Contact us</Link>

@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect} from "react";
+import React, { Fragment, useCallback, useEffect } from "react";
 import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,9 +39,12 @@ const HeaderBeforeLogin = () => {
   return (
     <Fragment>
       <header className="bg-white dark:bg-black bg-opacity-[75%] border-b dark:border-black transform backdrop-blur-md text-black dark:text-white z-50 sticky top-[0px] w-full h-[80px] px-6 md:px-10 flex items-center justify-between">
-        <Link href={CONST.Routes.MAIN} className="flex items-center gap-2">
-          <div>Logo</div>
-          <div className="text-2xl font-semibold font-deca ml-2 italic text-black dark:text-white">
+        <Link
+          href={CONST.Routes.MAIN}
+          className="flex items-center gap-2 md:ps-4"
+        >
+          {utils.Logo()}
+          <div className="text-xl md:text-2xl font-semibold font-deca  italic text-black dark:text-white">
             derivJ
           </div>
         </Link>

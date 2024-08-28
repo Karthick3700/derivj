@@ -19,11 +19,14 @@ const initialState = {
   profileData: null,
   error: null,
   isDisabled: false,
-  kycData: null,
-  addressData: null,
-  bankData: null,
+  kyc: null,
+  address: null,
+  bank: null,
   documentType: null,
   updatedStep: null,
+  isKycVerified: false,
+  isAddressVerified: false,
+  isBankVerified: false,
 };
 
 const accountSlice = createSlice({
@@ -65,7 +68,13 @@ const accountSlice = createSlice({
         state.imageId = action.payload?.imageId?._id || null;
         state.documentType = action.payload?.nomineeId?.documentType || null;
         state.updatedStep = action.payload?.steps || null;
+        state.kyc = action.payload?.kycId || null;
+        state.address = action.payload?.addressId || null;
+        state.bank = action.payload?.bankId || null;
         state.isDisabled = true;
+        state.isKycVerified = action.payload?.isKycVerified || false;
+        state.isAddressVerified = action.payload?.isAddressVerified || false;
+        state.isBankVerified = action.payload?.isBankVerified || false;
       })
       .addCase(fetchUserProfile.rejected, handleRejected)
 

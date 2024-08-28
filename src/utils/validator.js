@@ -87,7 +87,9 @@ export const KYCSchema = Yup.object().shape({
 });
 
 export const addressSchema = Yup.object().shape({
-  documentFrontId: Yup.string().label(CONST.MSG.REQ_FRONT_AADHAR_IMG).required(),
+  documentFrontId: Yup.string()
+    .label(CONST.MSG.REQ_FRONT_AADHAR_IMG)
+    .required(),
   documentBackId: Yup.string().label(CONST.MSG.REQ_BACK_AADHAR_IMG).required(),
   documentNo: Yup.string()
     .label(CONST.MSG.REQ_AADHAR)
@@ -103,4 +105,20 @@ export const addressSchema = Yup.object().shape({
   city: Yup.string().label(CONST.MSG.REQ_CITY).required(),
   state: Yup.string().label(CONST.MSG.REQ_STATE).required(),
   pincode: Yup.string().label(CONST.MSG.REQ_PINCODE).required().max(10),
+});
+
+export const bankSchema = Yup.object().shape({
+  proofId: Yup.string().label(CONST.MSG.REQ_BANK_PROOF).required(),
+  name: Yup.string().label(CONST.MSG.REQ_BANK_NAME).required(),
+  holder: Yup.string().label(CONST.MSG.REQ_ACCOUNT_HOLDER_NAME).required(),
+  accountNumber: Yup.string().label(CONST.MSG.REQ_ACCOUNT_NO).required(),
+  reaccountNumber: Yup.string()
+    .oneOf([Yup.ref("accountNumber")], CONST.MSG.ACCOUNT_NUMBER_MATCH)
+    .required(),
+  ifscCode: Yup.string()
+    .label(CONST.MSG.IFSC_REQ_MSG)
+    .required()
+    .max(11)
+    .matches(CONST.MSG.IFSC_REGEX, CONST.MSG.IFSC_REGEX_MSG),
+  upiId: Yup.string(),
 });

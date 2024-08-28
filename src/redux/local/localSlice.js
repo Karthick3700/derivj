@@ -6,6 +6,10 @@ const initialState = {
   signupConfirmpwd: false,
   loginShowpwd: false,
   isMenuOpen: false,
+  isKycSubmitted: false,
+  isAddressSubmitted: false,
+  isBankSubmitted: false,
+  isProfileSubmitted: false,
 };
 
 const localSlice = createSlice({
@@ -33,6 +37,18 @@ const localSlice = createSlice({
     closeMenu: (state) => {
       state.isMenuOpen = false;
     },
+    setIsKycSubmitted: (state, action) => {
+      state.isKycSubmitted = action.payload;
+    },
+    setIsAddressSubmitted: (state, action) => {
+      state.isAddressSubmitted = action.payload;
+    },
+    setIsProfileSubmitted: (state, action) => {
+      state.isProfileSubmitted = action.payload;
+    },
+    setIsBankSubmitted: (state, action) => {
+      state.isBankSubmitted = actioin.payload;
+    },
   },
 });
 
@@ -44,6 +60,10 @@ export const {
   toggleMenu,
   openMenu,
   closeMenu,
+  setIsProfileSubmitted,
+  setIsKycSubmitted,
+  setIsAddressSubmitted,
+  setIsBankSubmitted,
 } = localSlice.actions;
 
 export default localSlice.reducer;

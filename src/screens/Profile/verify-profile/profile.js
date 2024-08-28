@@ -1,5 +1,5 @@
 import { Datepicker } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ImageUploader from "../image-uploader";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import {
   submitUserProfile,
   uploadProfileImage,
 } from "@/redux/account/accountBuilder";
+import Loading from "@/components/loader";
 
 const initialState = {
   imageId: "",
@@ -29,15 +30,16 @@ const initialState = {
 };
 const UserProfile = () => {
   const [selectedDocumentType, setSelectedDocumentType] = useState("");
-
   const relations = useSelector(
     (state) => state?.user?.commonData?.relationShip
   );
-
   const documentType = useSelector(
     (state) => state?.user?.commonData?.documentType
   );
   const dispatch = useDispatch();
+  const { isDisabled, profileData, isLoading } = useSelector(
+    (state) => state?.profile
+  );
 
   const {
     register,
@@ -50,10 +52,19 @@ const UserProfile = () => {
     resolver: yupResolver(profileSchema),
     defaultValues: initialState,
   });
-
-  const { isLoading, error, imageId, isDisabled } = useSelector(
-    (state) => state?.profile
-  );
+  useEffect(() => {
+    if (profileData) {
+      setValue("phoneNumber", profileData?.phone);
+      setValue("dateOfBirth", profileData?.dateOfBirth);
+      setValue("nominee.name", profileData?.nomineeId?.name);
+      setValue("nominee.email", profileData?.nomineeId?.email);
+      setValue("nominee.relation", profileData?.nomineeId?.relation);
+      setValue("nominee.dateOfBirth", profileData?.nomineeId?.dateOfBirth);
+      setValue("nominee.documentType", profileData?.nomineeId?.documentType);
+      setSelectedDocumentType(profileData?.nomineeId?.documentType);
+      setValue("nominee.documentNo", profileData?.nomineeId?.documentNo);
+    }
+  }, [profileData, setValue]);
 
   const handleProfileImageChange = async (e) => {
     const file = e.target.files[0];
@@ -110,24 +121,11 @@ const UserProfile = () => {
   };
 
   const handleDateOfBirthChange = (date) => {
-    console.log("userdob::", date);
-    const formattedDate = date
-      ? `${date.getDate()}/${date.toLocaleString("default", {
-          month: "short",
-        })}/${date.getFullYear()}`
-      : "";
-
-    setValue("dateOfBirth", formattedDate);
+    setValue("dateOfBirth", utils.formatDate(date));
   };
 
   const handleNomineeDateOfBirthChange = (date) => {
-    console.log("userdob::", date);
-    const formattedDate = date
-      ? `${date.getDate()}/${date.toLocaleString("default", {
-          month: "short",
-        })}/${date.getFullYear()}`
-      : "";
-    setValue("nominee.dateOfBirth", formattedDate);
+    setValue("nominee.dateOfBirth", utils.formatDate(date));
   };
 
   const handleDoctypeChange = (e) => {
@@ -146,14 +144,6 @@ const UserProfile = () => {
         <h1 className="text-xl font-bold">Please fill your data first</h1>
       </div>
 
-      {isDisabled && (
-        <div className="bg-slate-100 rounded-lg p-5 w-full">
-          <span className="text-lime-600 dark:text-gray-600 text-lg font-deca font-bold">
-            Your details are submitted move to the next step of KYC
-          </span>
-        </div>
-      )}
-
       <div className="flex flex-col w-full">
         <div className="flex pb-4 border-b-2 border-gray-200">
           <h2 className="text-base font-deca font-medium dark:text-gray-100 w-full">
@@ -163,26 +153,30 @@ const UserProfile = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-6 space-y-6 py-8 h-full w-full items-center">
           <ImageUploader />
-          <div className="col-span-2">
-            <label
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              htmlFor="file_input"
-            >
-              Profile Image
-            </label>
-            <input
-              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-              id="file_input"
-              type="file"
-              onChange={handleProfileImageChange}
-              disabled={isDisabled ? true : false}
-            />
-            {errors?.imageId && (
-              <p className="text-red-500 dark:text-red-400 mt-2 text-[12px]">
-                {errors?.imageId?.message}
-              </p>
-            )}
-          </div>
+          {profileData?.imageId ? (
+            ""
+          ) : (
+            <div className="col-span-2">
+              <label
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="file_input"
+              >
+                Profile Image
+              </label>
+              <input
+                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                id="file_input"
+                type="file"
+                onChange={handleProfileImageChange}
+                disabled={isDisabled ? true : false}
+              />
+              {errors?.imageId && (
+                <p className="text-red-500 dark:text-red-400 mt-2 text-[12px]">
+                  {errors?.imageId?.message}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex gap-12 pt-8 w-full md:flex-nowrap flex-wrap">
@@ -339,7 +333,7 @@ const UserProfile = () => {
             </div>
             <select
               id="documenttype"
-              defaultValue=""
+              value={selectedDocumentType}
               className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
               onChange={handleDoctypeChange}
               disabled={isDisabled ? true : false}
@@ -373,6 +367,7 @@ const UserProfile = () => {
                 className="block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                 type="string"
                 {...register("nominee.documentNo")}
+                disabled={isDisabled ? true : false}
               />
               {errors?.nominee?.documentNo && (
                 <p className="text-red-500 dark:text-red-400 mt-2 text-[12px]">
@@ -384,11 +379,11 @@ const UserProfile = () => {
         </div>
         <div className="flex gap-12 pt-8 w-full">
           <button
-            className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-deca bg-footer-gradient bg-cover bg-center dark:text-gray-200 text-black font-bold whitespace-nowrap dark:bg-none hover:bg-none hover:bg-black hover:text-white"
+            className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-deca bg-slate-800 w-28 dark:text-gray-200 text-white font-bold whitespace-nowrap dark:bg-transparent dark:hover:bg-slate-700 hover:bg-black hover:text-white"
             type="submit"
             disabled={isDisabled ? true : false}
           >
-            Submit
+            {isLoading ? <Loading width="w-5" height="h-5" /> : "submit"}
           </button>
         </div>
       </div>

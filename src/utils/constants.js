@@ -30,7 +30,7 @@ export const MSG = {
   REQ_CODE: "Verificatoin code",
 
   // BANK
-  REQ_NAME: "Name",
+  REQ_IMG_PROOF: "Bank proof",
   REQ_TITLE: "Bank title",
   REQ_ACCOUNT_NO: "Account number",
   REQ_RE_ACCOUNT_NO: "Re-enter account number",
