@@ -1,24 +1,26 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import ImageFallback from "./ImageFallback";
 import { useDispatch, useSelector } from "react-redux";
-import { service } from "@/services";
-import { UPLOAD_IMAGE } from "@/services/api-url.service";
 import { CONST, utils } from "@/utils";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { KYCSchema } from "@/utils/validator";
-import { updateKYC } from "@/redux/account/accountBuilder";
-import { setIsKycSubmitted } from "@/redux/local/localSlice";
+import {
+  fetchUserProfile,
+  updateKYC,
+  uploadImage,
+} from "@/redux/features/account/accountBuilder";
 import Processing from "@/components/process";
 import Success from "@/components/success";
 import Loading from "@/components/loader";
+import Failure from "@/components/failure";
 
 const KYCIDetails = () => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const dispatch = useDispatch();
   const authUser = useSelector((state) => state?.profile?.profileData);
-  const isKycSubmitted = useSelector((state) => state?.local?.isKycSubmitted);
+  const kycStatus = authUser?.kycId?.kycStatus;
   const isLoading = useSelector((state) => state?.profile?.isLoading);
 
   const {
@@ -32,41 +34,6 @@ const KYCIDetails = () => {
     resolver: yupResolver(KYCSchema),
   });
 
-  const handleuploadImage = async () => {
-    const formData = new FormData();
-    formData.append("image", image);
-
-    try {
-      const response = await service.imageUpload(UPLOAD_IMAGE, formData);
-      if (response?.statusCode === CONST.status.SUCCESS) {
-        utils.showSuccessMsg(response?.message);
-        setValue("documentId", response?.doc?._id);
-        setPreview(false);
-        console.log("reponseupload::", response);
-      } else {
-        console.log(response?.message);
-      }
-    } catch (error) {
-      console.log("Error::", error);
-    }
-  };
-
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
-
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImage(file) : setImage(null);
-    }
-  };
-
   useEffect(() => {
     if (image) {
       const reader = new FileReader();
@@ -79,29 +46,57 @@ const KYCIDetails = () => {
     }
   }, [image]);
 
-  const documentType = useSelector((state) => state?.profile?.documentType);
+  const handleImageChange = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > utils.fileSize()) {
+        utils.showErrorMsg("File size exceeds the allowed limit.");
+        return;
+      }
 
-  const handleKYCSubmit = async (data) => {
-    const { documentId, documentNo } = data;
-    const payload = {
-      documentId,
-      documentType,
-      documentNo,
-    };
-    try {
-      await dispatch(updateKYC(payload));
-      dispatch(setIsKycSubmitted(true));
-      reset();
-    } catch (error) {
-      console.log("error::", error);
+      if (!utils.imageFilevalidation(file)) {
+        utils.showErrorMsg("Invalid file type, please upload a valid image.");
+        return;
+      }
+      file && setImage(file);
     }
-  };
+  }, []);
+
+  const handleuploadImage = useCallback(async () => {
+    try {
+      const response = await dispatch(uploadImage(image));
+      setValue("documentId", response?.payload?._id);
+      setImage(null);
+      setPreview(null);
+    } catch (error) {
+      console.log("Error in uploading kyc::", error);
+    }
+  }, [dispatch, image, setValue]);
+
+  const handleKYCSubmit = useCallback(
+    async (data) => {
+      const { documentId, documentNo } = data;
+      const documentType = 20;
+      const payload = {
+        documentId,
+        documentType,
+        documentNo,
+      };
+      try {
+        await dispatch(updateKYC(payload));
+        dispatch(fetchUserProfile());
+        reset();
+      } catch (error) {
+        console.log("error::", error);
+      }
+    },
+    [dispatch, reset]
+  );
 
   return (
     <Fragment>
-      {!authUser?.isKycVerified && !isKycSubmitted && (
+      {!authUser?.isKycVerified && !kycStatus && (
         <Fragment>
-          {" "}
           <form
             onSubmit={handleSubmit(handleKYCSubmit)}
             className="flex flex-col  gap-4 mx-auto w-full"
@@ -166,7 +161,8 @@ const KYCIDetails = () => {
                     htmlFor="redocument-no"
                     className="bg-transparent rounded-b-sm  pt-2 pr-2 pb-1 pl-2 -mt-3 mr-0 mb-0 ml-2 font-semibold text-slate-700   dark:text-gray-400 "
                   >
-                    Re-Enter Document No<span className="text-red-700">*</span>
+                    Re-Enter Document No
+                    <span className="text-red-700">*</span>
                   </label>
                   <input
                     id="redocument-no"
@@ -195,8 +191,15 @@ const KYCIDetails = () => {
           </form>
         </Fragment>
       )}
-      {!authUser?.isKycVerified && isKycSubmitted && <Processing />}
-      {authUser?.isKycVerified && <Success tag="KYC" />}
+
+      {!authUser?.isKycVerified &&
+        CONST.KYC_VERIFY.PROCESSING === kycStatus && <Processing tag="KYC" />}
+      {authUser?.isKycVerified && kycStatus === CONST.KYC_VERIFY.SUCCESS && (
+        <Success tag="KYC" />
+      )}
+      {!authUser?.isKycVerified && kycStatus === CONST.KYC_VERIFY.FAILURE && (
+        <Failure tag="KYC" />
+      )}
     </Fragment>
   );
 };

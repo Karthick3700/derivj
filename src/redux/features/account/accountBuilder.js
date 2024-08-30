@@ -26,19 +26,34 @@ export const handleRejected = (state, action) => {
   state.error = action.payload;
 };
 
-const handleThunk = async (serviceMethod, payload, rejectWithValue) => {
+const handleThunk = async (
+  serviceMethod,
+  payload,
+  rejectWithValue,
+  options = {}
+) => {
+  const { hideSuccess, hideError } = options;
   try {
     const response = await serviceMethod(payload);
     if (response?.statusCode === CONST.status.SUCCESS) {
       if (response?.doc && Object.keys(response.doc).length > 0) {
+        if (!hideSuccess) {
+          utils.showSuccessMsg(response?.message);
+        }
+
         return response.doc;
       } else {
-        return utils.showSuccessMsg(response?.message);
+        if (!hideSuccess) {
+          utils.showSuccessMsg(response?.message);
+        }
+        return null;
       }
     } else {
+      if (!hideError) utils.showErrorMsg(response?.message);
       return rejectWithValue(response?.message);
     }
   } catch (error) {
+    console.log("Error from::", error);
     return rejectWithValue(error.message || error);
   }
 };
@@ -49,8 +64,8 @@ export const submitUserProfile = createAsyncThunk(
     handleThunk(service.post.bind(service, PROFILE), payload, rejectWithValue)
 );
 
-export const uploadProfileImage = createAsyncThunk(
-  "account/uploadProfileImage",
+export const uploadImage = createAsyncThunk(
+  "account/uploadImage",
   async (file, { rejectWithValue }) => {
     const formData = new FormData();
     formData.append("image", file);
@@ -65,7 +80,12 @@ export const uploadProfileImage = createAsyncThunk(
 export const fetchUserProfile = createAsyncThunk(
   "auth/fetchUserProfile",
   (_, { rejectWithValue }) =>
-    handleThunk(service.get.bind(service, USER_PROFILE), null, rejectWithValue)
+    handleThunk(
+      service.get.bind(service, USER_PROFILE),
+      null,
+      rejectWithValue,
+      { hideSuccess: true, hideError: true }
+    )
 );
 
 export const updateKYC = createAsyncThunk(

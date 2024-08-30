@@ -1,5 +1,5 @@
-import { fetchUserProfile } from "@/redux/account/accountBuilder";
-import { setMount, updateStep } from "@/redux/auth/authSlice";
+import { fetchUserProfile } from "@/redux/features/account/accountBuilder";
+import { setMount, updateStep } from "@/redux/features/auth/authSlice";
 import React, { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 

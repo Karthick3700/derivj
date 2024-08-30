@@ -1,13 +1,11 @@
-import { combineReducers } from "redux";
-import authSlice from "./auth/authSlice";
-import localSlice from "./local/localSlice";
-import accountSlice from "./account/accountSlice";
-
+import { combineReducers } from "@reduxjs/toolkit";
+import uiSlice from "./features/ui/uiSlice";
+import authSlice from "./features/auth/authSlice";
+import accountSlice from "./features/account/accountSlice";
 
 const rootReducer = combineReducers({
-  local: localSlice,
-  user: authSlice,
-  profile: accountSlice,
+  user: authSlice.reducer,
+  local: uiSlice.reducer,
+  profile: accountSlice.reducer,
 });
-
 export default rootReducer;

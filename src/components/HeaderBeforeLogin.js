@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect } from "react";
 import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleMenu, toggleMode } from "@/redux/local/localSlice";
+import { toggleMenu, toggleMode } from "@/redux/features/ui/uiSlice";
 
 const HeaderBeforeLogin = () => {
   const dispatch = useDispatch();

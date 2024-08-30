@@ -1,19 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  isDarkMode: false,
   signupShowpwd: false,
   signupConfirmpwd: false,
   loginShowpwd: false,
   isMenuOpen: false,
-  isKycSubmitted: false,
-  isAddressSubmitted: false,
-  isBankSubmitted: false,
-  isProfileSubmitted: false,
+  isLoading: false,
+  error: null,
+  plans: null,
+  isDarkMode: false,
 };
 
-const localSlice = createSlice({
-  name: "local",
+const uiSlice = createSlice({
+  name: "ui",
   initialState,
   reducers: {
     toggleMode: (state) => {
@@ -37,18 +36,6 @@ const localSlice = createSlice({
     closeMenu: (state) => {
       state.isMenuOpen = false;
     },
-    setIsKycSubmitted: (state, action) => {
-      state.isKycSubmitted = action.payload;
-    },
-    setIsAddressSubmitted: (state, action) => {
-      state.isAddressSubmitted = action.payload;
-    },
-    setIsProfileSubmitted: (state, action) => {
-      state.isProfileSubmitted = action.payload;
-    },
-    setIsBankSubmitted: (state, action) => {
-      state.isBankSubmitted = actioin.payload;
-    },
   },
 });
 
@@ -60,10 +47,6 @@ export const {
   toggleMenu,
   openMenu,
   closeMenu,
-  setIsProfileSubmitted,
-  setIsKycSubmitted,
-  setIsAddressSubmitted,
-  setIsBankSubmitted,
-} = localSlice.actions;
+} = uiSlice.actions;
 
-export default localSlice.reducer;
+export default uiSlice;

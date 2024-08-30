@@ -1,12 +1,10 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { CONST, localStorage, utils } from "@/utils";
-import { service } from "@/services";
-import { USER_PROFILE } from "@/services/api-url.service";
+import { createSlice } from "@reduxjs/toolkit";
+import { localStorage } from "@/utils";
 
 const initialState = {
+  isLoggedIn: false,
   isMounted: null,
   isLoading: false,
-  isLoggedIn: false,
   user: null,
   token: localStorage.getAuthToken() || null,
   isNew: false,
@@ -18,7 +16,7 @@ const initialState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: "user",
   initialState,
   reducers: {
     setMount: (state, action) => {
@@ -79,7 +77,7 @@ export const {
   setError,
   updateUserRoles,
   refreshToken,
-  updateStep
+  updateStep,
 } = authSlice.actions;
 
-export default authSlice.reducer;
+export default authSlice;

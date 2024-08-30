@@ -1,4 +1,5 @@
-import { setMount } from "@/redux/auth/authSlice";
+import GlobalLoading from "@/components/loading";
+import { setMount } from "@/redux/features/auth/authSlice";
 import { Fragment, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -13,7 +14,9 @@ const PreLogin = ({ children }) => {
   return isMounted ? (
     <Fragment>{children}</Fragment>
   ) : (
-    "Pre-login container loading"
+    <div className="container grid items-center justify-center h-[80vh]">
+      <GlobalLoading />
+    </div>
   );
 };
 

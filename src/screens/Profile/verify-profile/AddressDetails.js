@@ -4,24 +4,22 @@ import React, { useCallback, useState, useEffect, Fragment } from "react";
 import { useForm } from "react-hook-form";
 import ImageFallback from "./ImageFallback";
 import { CONST, utils } from "@/utils";
-import { service } from "@/services";
-import { UPLOAD_IMAGE } from "@/services/api-url.service";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAddress } from "@/redux/account/accountBuilder";
-import { setIsAddressSubmitted } from "@/redux/local/localSlice";
+import {
+  fetchUserProfile,
+  updateAddress,
+  uploadImage,
+} from "@/redux/features/account/accountBuilder";
 import Processing from "@/components/process";
 import Success from "@/components/success";
 import Loading from "@/components/loader";
+import Failure from "@/components/failure";
 
 const AddressDetails = () => {
-  const isAddressSubmitted = useSelector(
-    (state) => state?.local?.isAddressSubmitted
-  );
   const authUser = useSelector((state) => state?.profile?.profileData);
+  const addressStatus = authUser?.addressId?.addressStatus;
   const isLoading = useSelector((state) => state?.profile?.isLoading);
   const dispatch = useDispatch();
-  const disabled = isAddressSubmitted ? true : false;
-
   const [imgPreviewFront, setImgPreviewFront] = useState(null);
   const [imgPreviewBack, setImgPreviewBack] = useState(null);
   const [imageFront, setImageFront] = useState(null);
@@ -38,91 +36,17 @@ const AddressDetails = () => {
     resolver: yupResolver(addressSchema),
   });
 
-  useEffect(
-    () => {
-      if (authUser && authUser?.addressId) {
-        setValue("documentNo", authUser?.addressId?.documentNo);
-        setValue("reEnterDocumentNo", authUser?.addressId?.documentNo);
-        setValue("flotNo", authUser?.addressId?.flotNo);
-        setValue("street", authUser?.addressId?.street);
-        setValue("city", authUser?.addressId?.city);
-        setValue("state", authUser?.addressId?.state);
-        setValue("pincode", authUser?.addressId?.pincode);
-      }
-    },
-    authUser,
-    setValue
-  );
-
-  const handleUploadFrontImage = async () => {
-    const formData = new FormData();
-    formData.append("image", imageFront);
-
-    try {
-      const response = await service.imageUpload(UPLOAD_IMAGE, formData);
-      if (response?.statusCode === CONST.status.SUCCESS) {
-        utils.showSuccessMsg(response?.message);
-        setValue("documentFrontId", response?.doc?._id);
-        setImgPreviewFront(false);
-        setImageFront(null);
-      } else {
-        utils.showErrorMsg(response?.message);
-      }
-    } catch (error) {
-      console.log("Error::", error);
+  useEffect(() => {
+    if (authUser && authUser?.addressId) {
+      setValue("documentNo", authUser?.addressId?.documentNo);
+      setValue("reEnterDocumentNo", authUser?.addressId?.documentNo);
+      setValue("flotNo", authUser?.addressId?.flotNo);
+      setValue("street", authUser?.addressId?.street);
+      setValue("city", authUser?.addressId?.city);
+      setValue("state", authUser?.addressId?.state);
+      setValue("pincode", authUser?.addressId?.pincode);
     }
-  };
-
-  const handleUploadBackImage = async () => {
-    const formData = new FormData();
-    formData.append("image", imageBack);
-
-    try {
-      const response = await service.imageUpload(UPLOAD_IMAGE, formData);
-      if (response?.statusCode === CONST.status.SUCCESS) {
-        utils.showSuccessMsg(response?.message);
-        setValue("documentBackId", response?.doc?._id);
-        setImgPreviewBack(false);
-        setImageBack(null);
-      } else {
-        utils.showErrorMsg(response?.message);
-      }
-    } catch (error) {
-      console.log("Error::", error);
-    }
-  };
-
-  const handleFrontImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
-
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImageFront(file) : setImageFront(null);
-    }
-  };
-
-  const handleBackImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
-
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImageBack(file) : setImageBack(null);
-    }
-  };
+  }, [authUser, setValue]);
 
   useEffect(() => {
     if (imageFront) {
@@ -146,41 +70,99 @@ const AddressDetails = () => {
     }
   }, [imageFront, imageBack]);
 
-  const handleAddressSubmit = useCallback(async (data) => {
-    const {
-      documentFrontId,
-      documentBackId,
-      documentNo,
-      flotNo,
-      street,
-      city,
-      state,
-      pincode,
-    } = data;
-    const documentType = 10;
-    const payload = {
-      documentFrontId,
-      documentBackId,
-      documentType,
-      documentNo,
-      flotNo,
-      street,
-      city,
-      state,
-      pincode: Number(pincode),
-    };
-    try {
-      await dispatch(updateAddress(payload));
-      dispatch(setIsAddressSubmitted(true));
-      reset();
-    } catch (error) {
-      console.log("error::", error);
+  const handleFrontImageChange = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > utils.fileSize()) {
+        utils.showErrorMsg("File size exceeds the allowed limit.");
+        return;
+      }
+
+      if (!utils.imageFilevalidation(file)) {
+        utils.showErrorMsg("Invalid file type, please upload a valid image.");
+        return;
+      }
+      file ? setImageFront(file) : setImageFront(null);
     }
   }, []);
 
+  const handleBackImageChange = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > utils.fileSize()) {
+        utils.showErrorMsg("File size exceeds the allowed limit.");
+        return;
+      }
+
+      if (!utils.imageFilevalidation(file)) {
+        utils.showErrorMsg("Invalid file type, please upload a valid image.");
+        return;
+      }
+      file ? setImageBack(file) : setImageBack(null);
+    }
+  }, []);
+
+  const handleUploadFrontImage = useCallback(async () => {
+    try {
+      const response = await dispatch(uploadImage(imageFront));
+      setValue("documentFrontId", response?.payload?._id);
+      setImgPreviewFront(false);
+      setImageFront(null);
+    } catch (error) {
+      console.log("Error::", error);
+    }
+  }, [dispatch, imageFront, setValue]);
+
+  const handleUploadBackImage = useCallback(async () => {
+    try {
+      const response = await dispatch(uploadImage(imageBack));
+      setValue("documentBackId", response?.payload?._id);
+      setImgPreviewBack(false);
+      setImageBack(null);
+    } catch (error) {
+      console.log("Error::", error);
+    }
+  }, [dispatch, setValue, imageBack]);
+
+  const handleAddressSubmit = useCallback(
+    async (data) => {
+      const {
+        documentFrontId,
+        documentBackId,
+        documentNo,
+        flotNo,
+        street,
+        city,
+        state,
+        pincode,
+      } = data;
+      const documentType = 10;
+      const payload = {
+        documentFrontId,
+        documentBackId,
+        documentType,
+        documentNo,
+        flotNo,
+        street,
+        city,
+        state,
+        pincode: Number(pincode),
+      };
+      try {
+        await dispatch(updateAddress(payload));
+        dispatch(setIsAddressSubmitted(true));
+        dispatch(fetchUserProfile());
+        reset();
+      } catch (error) {
+        console.log("error::", error);
+      }
+    },
+    [dispatch, reset]
+  );
+
   return (
     <Fragment>
-      {!authUser?.isAddressVerified && !isAddressSubmitted && (
+      {!authUser?.isAddressVerified && !addressStatus && (
         <Fragment>
           {" "}
           <form
@@ -269,7 +251,6 @@ const AddressDetails = () => {
                     className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                     type="number"
                     {...register("documentNo")}
-                    disabled={disabled}
                   />
                   {errors?.documentNo && (
                     <p className="text-red-600 dark:text-red-400 mt-2">
@@ -282,7 +263,8 @@ const AddressDetails = () => {
                     htmlFor="redocument-no"
                     className="bg-transparent rounded-b-sm  pt-2 pr-2 pb-1 pl-2 -mt-3 mr-0 mb-0 ml-2 font-semibold text-slate-700   dark:text-gray-400 "
                   >
-                    Re-Enter Document No<span className="text-red-700">*</span>
+                    Re-Enter Document No
+                    <span className="text-red-700">*</span>
                   </label>
                   <input
                     id="redocument-no"
@@ -291,7 +273,6 @@ const AddressDetails = () => {
                     className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                     type="string"
                     {...register("reEnterDocumentNo")}
-                    disabled={disabled}
                   />
                   {errors?.reEnterDocumentNo && (
                     <p className="text-red-600 dark:text-red-400 mt-2">
@@ -315,7 +296,6 @@ const AddressDetails = () => {
                     className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                     type="string"
                     {...register("flotNo")}
-                    disabled={disabled}
                   />
                   {errors?.flotNo && (
                     <p className="text-red-600 dark:text-red-400 mt-2">
@@ -337,7 +317,6 @@ const AddressDetails = () => {
                     className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                     type="string"
                     {...register("street")}
-                    disabled={disabled}
                   />
                   {errors?.street && (
                     <p className="text-red-600 dark:text-red-400 mt-2">
@@ -361,7 +340,6 @@ const AddressDetails = () => {
                     className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                     type="string"
                     {...register("city")}
-                    disabled={disabled}
                   />
                   {errors?.city && (
                     <p className="text-red-600 dark:text-red-400 mt-2">
@@ -406,7 +384,6 @@ const AddressDetails = () => {
                     className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
                     type="number"
                     {...register("pincode")}
-                    disabled={disabled}
                   />
                   {errors?.pincode && (
                     <p className="text-red-600 dark:text-red-400 mt-2">
@@ -419,7 +396,6 @@ const AddressDetails = () => {
                 <button
                   className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-deca bg-slate-800 w-28 dark:text-gray-200 text-white font-bold whitespace-nowrap dark:bg-transparent dark:hover:bg-slate-700 hover:bg-black hover:text-white"
                   type="submit"
-                  disabled={disabled}
                 >
                   {isLoading ? <Loading width="w-5" height="h-5" /> : "submit"}
                 </button>
@@ -428,8 +404,14 @@ const AddressDetails = () => {
           </form>
         </Fragment>
       )}
-      {!authUser?.isAddressVerified && isAddressSubmitted && <Processing />}
-      {authUser?.isAddressVerified && <Success tag="address" />}
+      {!authUser?.isAddressVerified &&
+        addressStatus === CONST.KYC_VERIFY.PROCESSING && (
+          <Processing tag="address" />
+        )}
+      {authUser?.isAddressVerified &&
+        addressStatus === CONST.KYC_VERIFY.SUCCESS && <Success tag="address" />}
+      {!authUser?.isAddressVerified &&
+        addressStatus === CONST.KYC_VERIFY.FAILURE && <Failure tag="address" />}
     </Fragment>
   );
 };

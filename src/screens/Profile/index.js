@@ -1,14 +1,17 @@
 "use client";
-import React, { Fragment, useCallback, useEffect } from "react";
+import React, { Fragment, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { CONST, utils } from "@/utils";
-import UserProfile from "./verify-profile/profile";
 import KYCIDetails from "./verify-profile/KYCIDetails";
 import AddressDetails from "./verify-profile/AddressDetails";
 import BankDetails from "./verify-profile/BankDetails";
 import { useRouter } from "next/router";
-import { logout } from "@/redux/auth/authSlice";
+import { logout } from "@/redux/features/auth/authSlice";
 import Dashboard from "./dashboard";
+import Subscription from "./subscription";
+import Deposit from "./deposit";
+import Withdraw from "./withdraw";
+import UserProfile from "./profile";
 
 const profileTabLinks = [
   { name: "Dashboard", key: "dashboard", icon: utils.DashboardIcon(20, 20) },
@@ -33,15 +36,12 @@ const profileTabLinks = [
 const ProfileScreen = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const profile = useSelector((state) => state?.account?.profile);
-  const step = useSelector((state) => state?.user?.step);
-  const { key } = router.query;
+  const profile = useSelector((state) => state.profile);
+  console.log("profile::", profile);
 
-  useEffect(() => {
-    if (!key) {
-      router.replace("/profile?key=profile");
-    }
-  }, [key, router]);
+  const step = useSelector((state) => state?.user?.step);
+
+  const { key } = router.query;
 
   const handleLogout = useCallback(() => {
     dispatch(logout());
@@ -80,11 +80,11 @@ const ProfileScreen = () => {
       case "bank":
         return <BankDetails />;
       case "subscription":
-        return "Coming soon...";
+        return <Subscription />;
       case "deposit":
-        return "Coming soon...";
+        return <Deposit />;
       case "withdraw":
-        return "Coming soon...";
+        return <Withdraw />;
       case "change-password":
         return "Coming soon...";
       default:

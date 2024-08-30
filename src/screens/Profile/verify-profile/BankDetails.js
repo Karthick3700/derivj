@@ -1,62 +1,35 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import ImageFallback from "./ImageFallback";
 import { CONST, utils } from "@/utils";
-import { service } from "@/services";
-import { UPLOAD_IMAGE } from "@/services/api-url.service";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { bankSchema } from "@/utils/validator";
-import { updateBank } from "@/redux/account/accountBuilder";
+import {
+  fetchUserProfile,
+  updateBank,
+  uploadImage,
+} from "@/redux/features/account/accountBuilder";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsBankSubmitted } from "@/redux/local/localSlice";
 import Processing from "@/components/process";
 import Success from "@/components/success";
 import Loading from "@/components/loader";
+import Failure from "@/components/failure";
 
 const BankDetails = () => {
   const dispatch = useDispatch();
   const authUser = useSelector((state) => state?.profile?.profileData);
-  const isBankSubmitted = useSelector((state) => state?.local?.isBankSubmitted);
   const isLoading = useSelector((state) => state?.profile?.isLoading);
-
+  const bankStatus = authUser?.bankId?.bankStatus;
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  const handleImageChange = useCallback(async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
-
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImage(file) : setImage(null);
-    }
-  }, []);
-
-  const handleUploadImage = useCallback(async () => {
-    const formData = new FormData();
-    formData.append("image", image);
-
-    try {
-      const response = await service.imageUpload(UPLOAD_IMAGE, formData);
-      if (response?.statusCode === CONST.status.SUCCESS) {
-        utils.showSuccessMsg(response?.message);
-        setValue("proofId", response?.doc?._id);
-        setPreview(false);
-        setImage(null);
-      } else {
-        console.log(response?.message);
-        utils.showErrorMsg(response?.message);
-      }
-    } catch (error) {
-      console.log("Error::", error);
-    }
-  }, []);
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ mode: "all", resolver: yupResolver(bankSchema) });
 
   useEffect(() => {
     if (image) {
@@ -71,29 +44,51 @@ const BankDetails = () => {
     }
   }, [image]);
 
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({ mode: "all", resolver: yupResolver(bankSchema) });
+  const handleImageChange = useCallback(async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > utils.fileSize()) {
+        utils.showErrorMsg("File size exceeds the allowed limit.");
+        return;
+      }
 
-  const handleUpdateBankSubmit = useCallback(async (data) => {
-    const { proofId, name, holder, accountNumber, ifscCode, upiId } = data;
-    const payload = { proofId, name, holder, accountNumber, ifscCode, upiId };
-    try {
-      await dispatch(updateBank(payload));
-      dispatch(setIsBankSubmitted(true));
-      reset();
-    } catch (error) {
-      console.log("error::", error);
+      if (!utils.imageFilevalidation(file)) {
+        utils.showErrorMsg("Invalid file type, please upload a valid image.");
+        return;
+      }
+      file && setImage(file);
     }
   }, []);
 
+  const handleUploadImage = useCallback(async () => {
+    try {
+      const response = await dispatch(uploadImage(image));
+      setValue("proofId", response?.payload?._id);
+      setImage(null);
+      setPreview(null);
+    } catch (error) {
+      console.log("Error in uploading image::", error);
+    }
+  }, [dispatch, image, setValue]);
+
+  const handleUpdateBankSubmit = useCallback(
+    async (data) => {
+      const { proofId, name, holder, accountNumber, ifscCode, upiId } = data;
+      const payload = { proofId, name, holder, accountNumber, ifscCode, upiId };
+      try {
+        await dispatch(updateBank(payload));
+        dispatch(fetchUserProfile());
+        reset();
+      } catch (error) {
+        console.log("error::", error);
+      }
+    },
+    [dispatch, reset]
+  );
+
   return (
     <Fragment>
-      {!authUser?.isBankVerified && !isBankSubmitted && (
+      {!authUser?.isBankVerified && !bankStatus && (
         <Fragment>
           <form
             onSubmit={handleSubmit(handleUpdateBankSubmit)}
@@ -279,8 +274,14 @@ const BankDetails = () => {
           </form>
         </Fragment>
       )}
-      {!authUser?.isBankVerified && isBankSubmitted && <Processing />}
-      {authUser?.isBankVerified && <Success tag="bank" />}
+      {!authUser?.isBankVerified &&
+        bankStatus === CONST.KYC_VERIFY.PROCESSING && <Processing tag="bank" />}
+      {authUser?.isBankVerified && bankStatus === CONST.KYC_VERIFY.SUCCESS && (
+        <Success tag="bank" />
+      )}
+      {!authUser?.isBankVerified && bankStatus === CONST.KYC_VERIFY.FAILURE && (
+        <Failure tag="bank" />
+      )}
     </Fragment>
   );
 };

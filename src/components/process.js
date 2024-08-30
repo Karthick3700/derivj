@@ -1,10 +1,10 @@
 import React from "react";
 
-const Processing = () => {
+const Processing = ({ tag }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-6 bg-gray-100 dark:bg-gray-800 rounded-md shadow-md">
       <svg
-        className="animate-spin h-24 w-24 text-yellow-400 dark:text-gray-300 mb-4"
+        className="animate-spin h-24 w-24 text-gray-600 dark:text-gray-300 mb-4"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -24,7 +24,7 @@ const Processing = () => {
         ></path>
       </svg>
       <span className="text-lg font-semibold text-gray-700 dark:text-gray-300 text-center">
-        Your verification is processing...
+        Your {tag} verification is processing...
       </span>
     </div>
   );

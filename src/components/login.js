@@ -7,8 +7,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { LOG_IN } from "@/services/api-url.service";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleLoginShowpwd } from "@/redux/local/localSlice";
-import { loading, login } from "@/redux/auth/authSlice";
+import { toggleLoginShowpwd } from "@/redux/features/ui/uiSlice";
+import { loading, login } from "@/redux/features/auth/authSlice";
 import Loading from "./loader";
 import { service } from "@/services";
 

@@ -1,20 +1,19 @@
-import 'flowbite/dist/flowbite.css';
+import "flowbite/dist/flowbite.css";
 import "@/styles/globals.css";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import Layout from "./Layout";
 import { useRouter } from "next/router";
-import { Provider } from "react-redux";
-import store from "@/redux/store";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { localStorage } from "@/utils";
 import GlobalLoading from "@/components/loading";
+import { Provider } from "react-redux";
+import store from "@/redux/store";
 
 function MyApp({ Component, pageProps }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  
 
   useEffect(() => {
     const theme = localStorage.getTheme();

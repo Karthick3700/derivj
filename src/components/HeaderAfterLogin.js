@@ -2,9 +2,9 @@ import React, { Fragment, useCallback, useEffect } from "react";
 import { CONST, localStorage, utils } from "@/utils";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleMenu, toggleMode } from "@/redux/local/localSlice";
+import { toggleMenu, toggleMode } from "@/redux/features/ui/uiSlice";
 import { useRouter } from "next/router";
-import { logout } from "@/redux/auth/authSlice";
+import { logout } from "@/redux/features/auth/authSlice";
 
 const HeaderAfterLogin = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,7 @@ const HeaderAfterLogin = () => {
     dispatch(logout());
     router.push(CONST.Routes.LOGIN);
     utils.showSuccessMsg(CONST.MSG.LOGOUT_SUCCESS);
-  }, [dispatch, router, utils]);
+  }, [dispatch, router]);
 
   return (
     <Fragment>

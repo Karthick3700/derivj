@@ -33,9 +33,7 @@ export const imageFilevalidation = (file) => {
 
 export const formatDate = (date) => {
   return date
-    ? `${date.getDate()}/${date.toLocaleString("default", {
-        month: "short",
-      })}/${date.getFullYear()}`
+    ? `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
     : "";
 };
 

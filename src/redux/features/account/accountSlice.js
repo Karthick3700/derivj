@@ -5,7 +5,7 @@ import {
   updateAddress,
   updateBank,
   updateKYC,
-  uploadProfileImage,
+  uploadImage,
   handlePending,
   handleFulfilled,
   handleRejected,
@@ -30,30 +30,18 @@ const initialState = {
 };
 
 const accountSlice = createSlice({
-  name: "account",
+  name: "profile",
   initialState,
-  reducers: {
-    uploadImageData: (state, action) => {
-      state.profileImage = action.payload;
-      state.imagePath = state.profileImage?.imagePath;
-      state.imageId = state.profileImage?._id;
-    },
-    uploadUserProfile: (state, action) => {
-      state.profileData = action.payload;
-    },
-    clearError: (state) => {
-      state.error = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(uploadProfileImage.pending, handlePending)
-      .addCase(uploadProfileImage.fulfilled, (state, action) => {
+      .addCase(uploadImage.pending, handlePending)
+      .addCase(uploadImage.fulfilled, (state, action) => {
         handleFulfilled(state, action, "profileImage");
         state.imagePath = action.payload?.imagePath;
         state.imageId = action.payload?._id;
       })
-      .addCase(uploadProfileImage.rejected, handleRejected)
+      .addCase(uploadImage.rejected, handleRejected)
 
       .addCase(submitUserProfile.pending, handlePending)
       .addCase(submitUserProfile.fulfilled, (state) => {
@@ -101,4 +89,4 @@ const accountSlice = createSlice({
 export const { uploadImageData, uploadUserProfile, clearError } =
   accountSlice.actions;
 
-export default accountSlice.reducer;
+export default accountSlice;

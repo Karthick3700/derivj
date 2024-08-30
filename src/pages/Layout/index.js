@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   loadCommonData,
   login,
-  setLoggedIn,
+  logout,
   setMount,
-} from "@/redux/auth/authSlice";
+} from "@/redux/features/auth/authSlice";
 import { useRouter } from "next/router";
 import HeaderAfterLogin from "@/components/HeaderAfterLogin";
 import HeaderBeforeLogin from "@/components/HeaderBeforeLogin";
@@ -18,8 +18,25 @@ import PreLogin from "./pre-login";
 import PostLogin from "./post-login";
 
 const Layout = ({ children }) => {
+  const router = useRouter();
   const dispatch = useDispatch();
-  const { isLoggedIn, isMounted } = useSelector((state) => state?.user);
+  const { isLoggedIn, isMounted } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    const token = localStorage.getAuthToken();
+    const publicRoutes = [
+      CONST.Routes.MAIN,
+      CONST.Routes.LOGIN,
+      CONST.Routes.SIGN_UP,
+    ];
+    const protectedRoutes = !publicRoutes.includes(router.pathname);
+
+    if (protectedRoutes && !token) {
+      dispatch(logout());
+      localStorage.removeAuthToken();
+      router.push(CONST.Routes.LOGIN);
+    }
+  }, [isLoggedIn, router, dispatch, router.pathname]);
 
   useEffect(() => {
     const initialize = async () => {

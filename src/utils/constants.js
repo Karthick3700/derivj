@@ -143,8 +143,9 @@ export const status = {
 export const KYC_VERIFY = {
   VERIFY: 1,
   UN_VERIFY: 3,
-  REJECTED: 0,
-  PROCESSING: 2,
+  FAILURE: 30,
+  PROCESSING: 10,
+  SUCCESS: 20,
 
   BASIC_VERIFY: 10,
   PAN_VERIFY: 20,

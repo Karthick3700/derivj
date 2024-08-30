@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   toggleSignupConfirmpwd,
   toggleSignupShowpwd,
-} from "@/redux/local/localSlice";
+} from "@/redux/features/ui/uiSlice";
 import { service } from "@/services";
 
 const Register = () => {
@@ -42,13 +42,12 @@ const Register = () => {
 
     try {
       const resp = await service.post(SIGN_UP, payload);
-      if (resp?.statusCode === 200) {
+      if (resp?.statusCode === CONST.status.SUCCESS) {
         utils.showSuccessMsg(resp?.message);
         router.push(CONST.Routes.LOGIN);
       } else {
         utils.showErrorMsg(resp?.message);
       }
-
       reset();
     } catch (error) {
       console.log("Error::", error);

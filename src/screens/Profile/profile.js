@@ -1,18 +1,18 @@
 import { Datepicker } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ImageUploader from "../image-uploader";
+import ImageUploader from "./image-uploader";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { profileSchema } from "@/utils/validator";
 import { utils } from "@/utils";
-
-import { fileSize, imageFilevalidation } from "@/utils/utils";
 import {
+  fetchUserProfile,
   submitUserProfile,
-  uploadProfileImage,
-} from "@/redux/account/accountBuilder";
+  uploadImage,
+} from "@/redux/features/account/accountBuilder";
 import Loading from "@/components/loader";
+import ImageFallback from "./verify-profile/ImageFallback";
 
 const initialState = {
   imageId: "",
@@ -28,15 +28,18 @@ const initialState = {
     documentNo: "",
   },
 };
+
 const UserProfile = () => {
-  const [selectedDocumentType, setSelectedDocumentType] = useState("");
-  const relations = useSelector(
-    (state) => state?.user?.commonData?.relationShip
-  );
-  const documentType = useSelector(
-    (state) => state?.user?.commonData?.documentType
-  );
   const dispatch = useDispatch();
+  const [selectedDocumentType, setSelectedDocumentType] = useState("");
+  const [image, setImage] = useState();
+  const [preivew, setPreview] = useState();
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear() - 18, 11, 31);
+
+  const { documentType, relationShip } = useSelector(
+    (state) => state?.user?.commonData
+  );
   const { isDisabled, profileData, isLoading } = useSelector(
     (state) => state?.profile
   );
@@ -52,6 +55,7 @@ const UserProfile = () => {
     resolver: yupResolver(profileSchema),
     defaultValues: initialState,
   });
+
   useEffect(() => {
     if (profileData) {
       setValue("phoneNumber", profileData?.phone);
@@ -64,76 +68,95 @@ const UserProfile = () => {
       setSelectedDocumentType(profileData?.nomineeId?.documentType);
       setValue("nominee.documentNo", profileData?.nomineeId?.documentNo);
     }
-  }, [profileData, setValue]);
 
-  const handleProfileImageChange = async (e) => {
+    if (image) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(image);
+    } else {
+      setPreview(null);
+    }
+  }, [profileData, setValue, image]);
+
+  const handleProfileImageChange = useCallback(async (e) => {
     const file = e.target.files[0];
+    if (file) {
+      if (file.size > utils.fileSize()) {
+        utils.showErrorMsg("File size exceeds the allowed limit.");
+        return;
+      }
 
-    const formData = new FormData();
-    formData.append("image", file);
-
-    if (!file) return;
-
-    if (file.size > fileSize()) {
-      utils.showErrorMsg("File size exceeds the allowed limit.");
-      return;
+      if (!utils.imageFilevalidation(file)) {
+        utils.showErrorMsg("Invalid file type, please upload a valid image.");
+        return;
+      }
+      file ? setImage(file) : setImage(null);
     }
+  }, []);
 
-    const isValidFile = imageFilevalidation(file);
-
-    if (!isValidFile) {
-      utils.showErrorMsg("Invalid file type, please upload a valid image");
-      return;
-    }
-
+  const handleuploadImage = useCallback(async () => {
     try {
-      const response = await dispatch(uploadProfileImage(file));
-      console.log("response", response?.payload?._id);
+      const response = await dispatch(uploadImage(image));
       setValue("imageId", response?.payload?._id);
-    } catch (err) {
-      console.error("imageuploaderr::", err);
-      utils.showErrorMsg(err?.message);
+      setPreview(false);
+      setImage(null);
+    } catch (error) {
+      console.log("Error from imageupload::", error);
     }
-  };
+  }, [dispatch, image, setValue]);
 
-  const handleProfileSubmit = async (data) => {
-    const payload = {
-      dateOfBirth: data.dateOfBirth,
-      phoneNumber: data.phoneNumber,
-      imageId: data.imageId,
-      nominee: {
-        name: data.nominee.name,
-        email: data.nominee.email,
-        relation: Number(data.nominee.relation),
-        dateOfBirth: data.nominee.dateOfBirth,
-        documentType: Number(data.nominee.documentType),
-        documentNo: data.nominee.documentNo,
-      },
-    };
+  const handleProfileSubmit = useCallback(
+    async (data) => {
+      const payload = {
+        dateOfBirth: data.dateOfBirth,
+        phoneNumber: data.phoneNumber,
+        imageId: data.imageId,
+        nominee: {
+          name: data.nominee.name,
+          email: data.nominee.email,
+          relation: Number(data.nominee.relation),
+          dateOfBirth: data.nominee.dateOfBirth,
+          documentType: Number(data.nominee.documentType),
+          documentNo: data.nominee.documentNo,
+        },
+      };
 
-    try {
-      await dispatch(submitUserProfile(payload));
+      try {
+        await dispatch(submitUserProfile(payload));
+        await dispatch(fetchUserProfile());
+        reset();
+      } catch (err) {
+        console.error("imageuploaderr::", err);
+      }
+    },
+    [dispatch, reset]
+  );
 
-      reset();
-    } catch (err) {
-      console.error("imageuploaderr::", err);
-    }
-  };
+  const handleDateOfBirthChange = useCallback(
+    (date) => {
+      setValue("dateOfBirth", utils.formatDate(date));
+    },
+    [setValue]
+  );
 
-  const handleDateOfBirthChange = (date) => {
-    setValue("dateOfBirth", utils.formatDate(date));
-  };
+  const handleNomineeDateOfBirthChange = useCallback(
+    (date) => {
+      setValue("nominee.dateOfBirth", utils.formatDate(date));
+    },
+    [setValue]
+  );
 
-  const handleNomineeDateOfBirthChange = (date) => {
-    setValue("nominee.dateOfBirth", utils.formatDate(date));
-  };
-
-  const handleDoctypeChange = (e) => {
-    const value = e.target.value;
-    setSelectedDocumentType(value);
-    setValue("nominee.documentType", value);
-    setValue("nominee.documentTypeVal", value);
-  };
+  const handleDoctypeChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      setSelectedDocumentType(value);
+      setValue("nominee.documentType", value);
+      setValue("nominee.documentTypeVal", value);
+    },
+    [setValue]
+  );
 
   return (
     <form
@@ -156,7 +179,7 @@ const UserProfile = () => {
           {profileData?.imageId ? (
             ""
           ) : (
-            <div className="col-span-2">
+            <div className="col-span-2 flex flex-col gap-6">
               <label
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 htmlFor="file_input"
@@ -175,6 +198,12 @@ const UserProfile = () => {
                   {errors?.imageId?.message}
                 </p>
               )}
+              {preivew && (
+                <ImageFallback
+                  sourceurl={preivew}
+                  onClick={handleuploadImage}
+                />
+              )}
             </div>
           )}
         </div>
@@ -190,10 +219,12 @@ const UserProfile = () => {
             <Datepicker
               id="userdob"
               placeholder="Select Date"
-              format="dd MMM yyyy"
+              format="dd/mm/yyyy"
+              maxDate={maxDate}
               onSelectedDateChanged={(e) => handleDateOfBirthChange(e)}
               disabled={isDisabled ? true : false}
             />
+
             {errors?.dateOfBirth && (
               <p className="text-red-500 dark:text-red-400 mt-2 text-[12px]">
                 {errors?.dateOfBirth?.message}
@@ -255,7 +286,8 @@ const UserProfile = () => {
               id="nomineedob"
               className="custom-datepicker"
               placeholder="Select Date"
-              format="dd MMM yyyy"
+              format="dd/mm/yyyy"
+              maxDate={maxDate}
               onSelectedDateChanged={(e) => handleNomineeDateOfBirthChange(e)}
               disabled={isDisabled ? true : false}
             />
@@ -308,7 +340,7 @@ const UserProfile = () => {
               <option value="" disabled>
                 Select Relationship
               </option>
-              {relations?.map((data, index) => (
+              {relationShip?.map((data, index) => (
                 <option key={index} value={data.value}>
                   {data.label}
                 </option>
