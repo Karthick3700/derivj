@@ -20,10 +20,10 @@ const AddressDetails = () => {
   const addressStatus = authUser?.addressId?.addressStatus;
   const isLoading = useSelector((state) => state?.profile?.isLoading);
   const dispatch = useDispatch();
-  const [imgPreviewFront, setImgPreviewFront] = useState(null);
-  const [imgPreviewBack, setImgPreviewBack] = useState(null);
-  const [imageFront, setImageFront] = useState(null);
-  const [imageBack, setImageBack] = useState(null);
+  // const [imgPreviewFront, setImgPreviewFront] = useState(null);
+  // const [imgPreviewBack, setImgPreviewBack] = useState(null);
+  // const [imageFront, setImageFront] = useState(null);
+  // const [imageBack, setImageBack] = useState(null);
 
   const {
     register,
@@ -48,98 +48,87 @@ const AddressDetails = () => {
     }
   }, [authUser, setValue]);
 
-  useEffect(() => {
-    if (imageFront) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImgPreviewFront(reader.result);
-      };
-      reader.readAsDataURL(imageFront);
-    } else {
-      setImgPreviewFront(null);
-    }
+  // useEffect(() => {
+  //   if (imageFront) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setImgPreviewFront(reader.result);
+  //     };
+  //     reader.readAsDataURL(imageFront);
+  //   } else {
+  //     setImgPreviewFront(null);
+  //   }
 
-    if (imageBack) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImgPreviewBack(reader.result);
-      };
-      reader.readAsDataURL(imageBack);
-    } else {
-      setImgPreviewBack(null);
-    }
-  }, [imageFront, imageBack]);
+  //   if (imageBack) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setImgPreviewBack(reader.result);
+  //     };
+  //     reader.readAsDataURL(imageBack);
+  //   } else {
+  //     setImgPreviewBack(null);
+  //   }
+  // }, [imageFront, imageBack]);
 
-  const handleFrontImageChange = useCallback(async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
+  // const handleFrontImageChange = useCallback(async (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (file.size > utils.fileSize()) {
+  //       utils.showErrorMsg("File size exceeds the allowed limit.");
+  //       return;
+  //     }
 
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImageFront(file) : setImageFront(null);
-    }
-  }, []);
+  //     if (!utils.imageFilevalidation(file)) {
+  //       utils.showErrorMsg("Invalid file type, please upload a valid image.");
+  //       return;
+  //     }
+  //     file ? setImageFront(file) : setImageFront(null);
+  //   }
+  // }, []);
 
-  const handleBackImageChange = useCallback(async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
+  // const handleBackImageChange = useCallback(async (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (file.size > utils.fileSize()) {
+  //       utils.showErrorMsg("File size exceeds the allowed limit.");
+  //       return;
+  //     }
 
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImageBack(file) : setImageBack(null);
-    }
-  }, []);
+  //     if (!utils.imageFilevalidation(file)) {
+  //       utils.showErrorMsg("Invalid file type, please upload a valid image.");
+  //       return;
+  //     }
+  //     file ? setImageBack(file) : setImageBack(null);
+  //   }
+  // }, []);
 
-  const handleUploadFrontImage = useCallback(async () => {
-    try {
-      const response = await dispatch(uploadImage(imageFront));
-      setValue("documentFrontId", response?.payload?._id);
-      setImgPreviewFront(false);
-      setImageFront(null);
-    } catch (error) {
-      console.log("Error::", error);
-    }
-  }, [dispatch, imageFront, setValue]);
+  // const handleUploadFrontImage = useCallback(async () => {
+  //   try {
+  //     const response = await dispatch(uploadImage(imageFront));
+  //     setValue("documentFrontId", response?.payload?._id);
+  //     setImgPreviewFront(false);
+  //     setImageFront(null);
+  //   } catch (error) {
+  //     console.log("Error::", error);
+  //   }
+  // }, [dispatch, imageFront, setValue]);
 
-  const handleUploadBackImage = useCallback(async () => {
-    try {
-      const response = await dispatch(uploadImage(imageBack));
-      setValue("documentBackId", response?.payload?._id);
-      setImgPreviewBack(false);
-      setImageBack(null);
-    } catch (error) {
-      console.log("Error::", error);
-    }
-  }, [dispatch, setValue, imageBack]);
+  // const handleUploadBackImage = useCallback(async () => {
+  //   try {
+  //     const response = await dispatch(uploadImage(imageBack));
+  //     setValue("documentBackId", response?.payload?._id);
+  //     setImgPreviewBack(false);
+  //     setImageBack(null);
+  //   } catch (error) {
+  //     console.log("Error::", error);
+  //   }
+  // }, [dispatch, setValue, imageBack]);
 
   const handleAddressSubmit = useCallback(
     async (data) => {
-      const {
-        documentFrontId,
-        documentBackId,
-        documentNo,
-        flotNo,
-        street,
-        city,
-        state,
-        pincode,
-      } = data;
+      const { documentNo, flotNo, street, city, state, pincode } = data;
       const documentType = 10;
       const payload = {
-        documentFrontId,
-        documentBackId,
         documentType,
         documentNo,
         flotNo,
@@ -174,7 +163,7 @@ const AddressDetails = () => {
             </div>
 
             <div className="flex flex-col w-full gap-10 my-6">
-              {authUser?.addressId ? (
+              {/* {authUser?.addressId ? (
                 ""
               ) : (
                 <div className="grid md:grid-cols-2 gap-6 ">
@@ -235,7 +224,7 @@ const AddressDetails = () => {
                     )}
                   </div>
                 </div>
-              )}
+              )} */}
               <div className="flex flex-col md:flex-row gap-8">
                 <div className="relative w-full md:w-6/12 flex flex-col gap-2">
                   <label

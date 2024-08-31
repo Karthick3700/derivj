@@ -34,7 +34,7 @@ export const loginSchema = Yup.object().shape({
 });
 
 export const profileSchema = Yup.object().shape({
-  imageId: Yup.string().label(CONST.MSG.REQ_IMAGE).trim().required(),
+  // imageId: Yup.string().label(CONST.MSG.REQ_IMAGE).trim().required(),
   dateOfBirth: Yup.string().label(CONST.MSG.REQ_DOB).required(),
   phoneNumber: Yup.string().label(CONST.MSG.REQ_MOBILE).required(),
   nominee: Yup.object().shape({
@@ -73,7 +73,7 @@ export const profileSchema = Yup.object().shape({
 });
 
 export const KYCSchema = Yup.object().shape({
-  documentId: Yup.string().label(CONST.MSG.REQ_KYC_IMAGE).required(),
+  // documentId: Yup.string().label(CONST.MSG.REQ_KYC_IMAGE).required(),
   documentNo: Yup.string()
     .label(CONST.MSG.REQ_PAN_NUM)
     .required()
@@ -87,10 +87,10 @@ export const KYCSchema = Yup.object().shape({
 });
 
 export const addressSchema = Yup.object().shape({
-  documentFrontId: Yup.string()
-    .label(CONST.MSG.REQ_FRONT_AADHAR_IMG)
-    .required(),
-  documentBackId: Yup.string().label(CONST.MSG.REQ_BACK_AADHAR_IMG).required(),
+  // documentFrontId: Yup.string()
+  //   .label(CONST.MSG.REQ_FRONT_AADHAR_IMG)
+  //   .required(),
+  // documentBackId: Yup.string().label(CONST.MSG.REQ_BACK_AADHAR_IMG).required(),
   documentNo: Yup.string()
     .label(CONST.MSG.REQ_AADHAR)
     .required()
@@ -108,7 +108,7 @@ export const addressSchema = Yup.object().shape({
 });
 
 export const bankSchema = Yup.object().shape({
-  proofId: Yup.string().label(CONST.MSG.REQ_BANK_PROOF).required(),
+  // proofId: Yup.string().label(CONST.MSG.REQ_BANK_PROOF).required(),
   name: Yup.string().label(CONST.MSG.REQ_BANK_NAME).required(),
   holder: Yup.string().label(CONST.MSG.REQ_ACCOUNT_HOLDER_NAME).required(),
   accountNumber: Yup.string().label(CONST.MSG.REQ_ACCOUNT_NO).required(),
@@ -121,4 +121,34 @@ export const bankSchema = Yup.object().shape({
     .max(11)
     .matches(CONST.MSG.IFSC_REGEX, CONST.MSG.IFSC_REGEX_MSG),
   upiId: Yup.string(),
+});
+
+export const changepwdSchema = Yup.object().shape({
+  oldPassword: Yup.string()
+    .label(CONST.MSG.REQ_OLD_PASSWORD)
+    .required()
+    .matches(CONST.MSG.PASSWORD_REGEX_EXP, CONST.MSG.PASSWORD_REGEX_MSG),
+  newPassword: Yup.string()
+    .label(CONST.MSG.REQ_NEW_PASSWORD)
+    .required()
+    .test("newPassword", CONST.MSG.REQ_NEW_PASSWORD_MATCH, function (val) {
+      return this.parent.oldPassword !== val;
+    })
+    .matches(CONST.MSG.PASSWORD_REGEX_EXP, CONST.MSG.PASSWORD_REGEX_MSG),
+  confirmNewPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword")], CONST.MSG.REQ_PASSWORD_NOT_MATCH)
+    .label(CONST.MSG.REQ_CONFIRM_PASSWORD)
+    .required(),
+});
+
+export const transanctionSchema = Yup.object().shape({
+  transactionId: Yup.string()
+    .required("Transaction ID is required")
+    .matches(
+      /^[A-Za-z0-9_-]+$/,
+      "Transaction ID must contain only letters, numbers, underscores, and dashes"
+    )
+    .min(6, "Transaction ID must be at least 6 characters")
+    .max(20, "Transaction ID must be at most 20 characters"),
+  transactionProofId: Yup.string().label("Transanction proof").required(),
 });

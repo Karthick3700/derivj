@@ -1,22 +1,21 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState } from "react";
 import defaultImage from "../../../public/default-ui.png";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 const ImageUploader = () => {
   const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_URL || "";
-  const path = useSelector((state) => state?.profile?.imagePath);
-  console.log("path::", path);
+  // const path = useSelector((state) => state?.profile?.imagePath);
 
   const [avatarurl, setAvatarUrl] = useState(defaultImage);
 
-  useEffect(() => {
-    if (path && path.trim()) {
-      setAvatarUrl(`${imageBaseUrl}${path}`);
-    } else {
-      setAvatarUrl(defaultImage);
-    }
-  }, [path, imageBaseUrl]);
+  // useEffect(() => {
+  //   if (path && path.trim()) {
+  //     setAvatarUrl(`${imageBaseUrl}${path}`);
+  //   } else {
+  //     setAvatarUrl(defaultImage);
+  //   }
+  // }, [path, imageBaseUrl]);
 
   return (
     <Fragment>

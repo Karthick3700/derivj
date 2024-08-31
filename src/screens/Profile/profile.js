@@ -15,7 +15,7 @@ import Loading from "@/components/loader";
 import ImageFallback from "./verify-profile/ImageFallback";
 
 const initialState = {
-  imageId: "",
+  
   dateOfBirth: "",
   phoneNumber: "",
   nominee: {
@@ -32,8 +32,8 @@ const initialState = {
 const UserProfile = () => {
   const dispatch = useDispatch();
   const [selectedDocumentType, setSelectedDocumentType] = useState("");
-  const [image, setImage] = useState();
-  const [preivew, setPreview] = useState();
+  // const [image, setImage] = useState();
+  // const [preivew, setPreview] = useState();
   const today = new Date();
   const maxDate = new Date(today.getFullYear() - 18, 11, 31);
 
@@ -69,50 +69,50 @@ const UserProfile = () => {
       setValue("nominee.documentNo", profileData?.nomineeId?.documentNo);
     }
 
-    if (image) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(image);
-    } else {
-      setPreview(null);
-    }
-  }, [profileData, setValue, image]);
+    // if (image) {
+    //   const reader = new FileReader();
+    //   reader.onloadend = () => {
+    //     setPreview(reader.result);
+    //   };
+    //   reader.readAsDataURL(image);
+    // } else {
+    //   setPreview(null);
+    // }
+  }, [profileData, setValue]);
 
-  const handleProfileImageChange = useCallback(async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
+  // const handleProfileImageChange = useCallback(async (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (file.size > utils.fileSize()) {
+  //       utils.showErrorMsg("File size exceeds the allowed limit.");
+  //       return;
+  //     }
 
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file ? setImage(file) : setImage(null);
-    }
-  }, []);
+  //     if (!utils.imageFilevalidation(file)) {
+  //       utils.showErrorMsg("Invalid file type, please upload a valid image.");
+  //       return;
+  //     }
+  //     file ? setImage(file) : setImage(null);
+  //   }
+  // }, []);
 
-  const handleuploadImage = useCallback(async () => {
-    try {
-      const response = await dispatch(uploadImage(image));
-      setValue("imageId", response?.payload?._id);
-      setPreview(false);
-      setImage(null);
-    } catch (error) {
-      console.log("Error from imageupload::", error);
-    }
-  }, [dispatch, image, setValue]);
+  // const handleuploadImage = useCallback(async () => {
+  //   try {
+  //     const response = await dispatch(uploadImage(image));
+  //     setValue("imageId", response?.payload?._id);
+  //     setPreview(false);
+  //     setImage(null);
+  //   } catch (error) {
+  //     console.log("Error from imageupload::", error);
+  //   }
+  // }, [dispatch, image, setValue]);
 
   const handleProfileSubmit = useCallback(
     async (data) => {
       const payload = {
         dateOfBirth: data.dateOfBirth,
         phoneNumber: data.phoneNumber,
-        imageId: data.imageId,
+        // imageId: data.imageId,
         nominee: {
           name: data.nominee.name,
           email: data.nominee.email,
@@ -174,7 +174,7 @@ const UserProfile = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 space-y-6 py-8 h-full w-full items-center">
+        {/* <div className="grid grid-cols-1 md:grid-cols-6 space-y-6 py-8 h-full w-full items-center">
           <ImageUploader />
           {profileData?.imageId ? (
             ""
@@ -206,7 +206,7 @@ const UserProfile = () => {
               )}
             </div>
           )}
-        </div>
+        </div> */}
 
         <div className="flex gap-12 pt-8 w-full md:flex-nowrap flex-wrap">
           <div className="flex flex-col gap-2 w-full md:w-6/12">

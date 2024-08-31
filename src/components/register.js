@@ -42,7 +42,7 @@ const Register = () => {
 
     try {
       const resp = await service.post(SIGN_UP, payload);
-      if (resp?.statusCode === CONST.status.SUCCESS) {
+      if (resp?.statusCode === CONST.status.SUCCESSCODE) {
         utils.showSuccessMsg(resp?.message);
         router.push(CONST.Routes.LOGIN);
       } else {

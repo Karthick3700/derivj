@@ -20,8 +20,8 @@ const BankDetails = () => {
   const authUser = useSelector((state) => state?.profile?.profileData);
   const isLoading = useSelector((state) => state?.profile?.isLoading);
   const bankStatus = authUser?.bankId?.bankStatus;
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  // const [image, setImage] = useState(null);
+  // const [preview, setPreview] = useState(null);
 
   const {
     register,
@@ -31,50 +31,50 @@ const BankDetails = () => {
     reset,
   } = useForm({ mode: "all", resolver: yupResolver(bankSchema) });
 
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
+  // useEffect(() => {
+  //   if (image) {
+  //     const reader = new FileReader();
 
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(image);
-    } else {
-      setPreview(null);
-    }
-  }, [image]);
+  //     reader.onloadend = () => {
+  //       setPreview(reader.result);
+  //     };
+  //     reader.readAsDataURL(image);
+  //   } else {
+  //     setPreview(null);
+  //   }
+  // }, [image]);
 
-  const handleImageChange = useCallback(async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
+  // const handleImageChange = useCallback(async (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (file.size > utils.fileSize()) {
+  //       utils.showErrorMsg("File size exceeds the allowed limit.");
+  //       return;
+  //     }
 
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file && setImage(file);
-    }
-  }, []);
+  //     if (!utils.imageFilevalidation(file)) {
+  //       utils.showErrorMsg("Invalid file type, please upload a valid image.");
+  //       return;
+  //     }
+  //     file && setImage(file);
+  //   }
+  // }, []);
 
-  const handleUploadImage = useCallback(async () => {
-    try {
-      const response = await dispatch(uploadImage(image));
-      setValue("proofId", response?.payload?._id);
-      setImage(null);
-      setPreview(null);
-    } catch (error) {
-      console.log("Error in uploading image::", error);
-    }
-  }, [dispatch, image, setValue]);
+  // const handleUploadImage = useCallback(async () => {
+  //   try {
+  //     const response = await dispatch(uploadImage(image));
+  //     setValue("proofId", response?.payload?._id);
+  //     setImage(null);
+  //     setPreview(null);
+  //   } catch (error) {
+  //     console.log("Error in uploading image::", error);
+  //   }
+  // }, [dispatch, image, setValue]);
 
   const handleUpdateBankSubmit = useCallback(
     async (data) => {
-      const { proofId, name, holder, accountNumber, ifscCode, upiId } = data;
-      const payload = { proofId, name, holder, accountNumber, ifscCode, upiId };
+      const { name, holder, accountNumber, ifscCode, upiId } = data;
+      const payload = { name, holder, accountNumber, ifscCode, upiId };
       try {
         await dispatch(updateBank(payload));
         dispatch(fetchUserProfile());
@@ -97,7 +97,7 @@ const BankDetails = () => {
             <div className="flex ">
               <h1 className="text-xl font-bold">Bank Details</h1>
             </div>
-            <div className="flex flex-col gap-6 ">
+            {/* <div className="flex flex-col gap-6 ">
               <div className="w-full md:w-6/12 ">
                 <label
                   className="block mb-4 text-sm font-medium text-gray-900 dark:text-white"
@@ -126,7 +126,7 @@ const BankDetails = () => {
                   />
                 )}
               </div>
-            </div>
+            </div> */}
             <div className="flex flex-col w-full gap-8">
               <div className="flex gap-8 flex-col md:flex-row">
                 <div className="relative w-full md:w-6/12 flex flex-col gap-2">

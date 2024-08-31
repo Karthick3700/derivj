@@ -9,6 +9,9 @@ const initialState = {
   error: null,
   plans: null,
   isDarkMode: false,
+  changeShowpwd: false,
+  newShowpwd: false,
+  newConfirmpwd: false,
 };
 
 const uiSlice = createSlice({
@@ -36,6 +39,18 @@ const uiSlice = createSlice({
     closeMenu: (state) => {
       state.isMenuOpen = false;
     },
+    updatePlansList: (state, action) => {
+      state.plans = action.payload;
+    },
+    showOldpwd: (state) => {
+      state.changeShowpwd = !state.changeShowpwd;
+    },
+    showNewpwd: (state) => {
+      state.newShowpwd = !state.newShowpwd;
+    },
+    showConfirmnewpwd: (state) => {
+      state.newConfirmpwd = !state.newConfirmpwd;
+    },
   },
 });
 
@@ -47,6 +62,10 @@ export const {
   toggleMenu,
   openMenu,
   closeMenu,
+  updatePlansList,
+  showOldpwd,
+  showNewpwd,
+  showConfirmnewpwd,
 } = uiSlice.actions;
 
 export default uiSlice;

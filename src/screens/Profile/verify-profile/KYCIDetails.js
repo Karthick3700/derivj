@@ -16,8 +16,8 @@ import Loading from "@/components/loader";
 import Failure from "@/components/failure";
 
 const KYCIDetails = () => {
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  // const [image, setImage] = useState(null);
+  // const [preview, setPreview] = useState(null);
   const dispatch = useDispatch();
   const authUser = useSelector((state) => state?.profile?.profileData);
   const kycStatus = authUser?.kycId?.kycStatus;
@@ -34,51 +34,50 @@ const KYCIDetails = () => {
     resolver: yupResolver(KYCSchema),
   });
 
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(image);
-    } else {
-      setPreview(null);
-    }
-  }, [image]);
+  // useEffect(() => {
+  //   if (image) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setPreview(reader.result);
+  //     };
+  //     reader.readAsDataURL(image);
+  //   } else {
+  //     setPreview(null);
+  //   }
+  // }, [image]);
 
-  const handleImageChange = useCallback(async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > utils.fileSize()) {
-        utils.showErrorMsg("File size exceeds the allowed limit.");
-        return;
-      }
+  // const handleImageChange = useCallback(async (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (file.size > utils.fileSize()) {
+  //       utils.showErrorMsg("File size exceeds the allowed limit.");
+  //       return;
+  //     }
 
-      if (!utils.imageFilevalidation(file)) {
-        utils.showErrorMsg("Invalid file type, please upload a valid image.");
-        return;
-      }
-      file && setImage(file);
-    }
-  }, []);
+  //     if (!utils.imageFilevalidation(file)) {
+  //       utils.showErrorMsg("Invalid file type, please upload a valid image.");
+  //       return;
+  //     }
+  //     file && setImage(file);
+  //   }
+  // }, []);
 
-  const handleuploadImage = useCallback(async () => {
-    try {
-      const response = await dispatch(uploadImage(image));
-      setValue("documentId", response?.payload?._id);
-      setImage(null);
-      setPreview(null);
-    } catch (error) {
-      console.log("Error in uploading kyc::", error);
-    }
-  }, [dispatch, image, setValue]);
+  // const handleuploadImage = useCallback(async () => {
+  //   try {
+  //     const response = await dispatch(uploadImage(image));
+  //     setValue("documentId", response?.payload?._id);
+  //     setImage(null);
+  //     setPreview(null);
+  //   } catch (error) {
+  //     console.log("Error in uploading kyc::", error);
+  //   }
+  // }, [dispatch, image, setValue]);
 
   const handleKYCSubmit = useCallback(
     async (data) => {
-      const { documentId, documentNo } = data;
+      const { documentNo } = data;
       const documentType = 20;
       const payload = {
-        documentId,
         documentType,
         documentNo,
       };
@@ -99,14 +98,14 @@ const KYCIDetails = () => {
         <Fragment>
           <form
             onSubmit={handleSubmit(handleKYCSubmit)}
-            className="flex flex-col  gap-4 mx-auto w-full"
+            className="flex flex-col  gap-8 mx-auto w-full"
           >
             <div className="flex  ">
               <h1 className="text-xl font-bold">KYC Details</h1>
             </div>
 
             <div className="flex flex-col w-full gap-6">
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-x-12 gap-y-6 py-8 h-full w-full items-center">
+              {/* <div className="grid grid-cols-1 md:grid-cols-6 gap-x-12 gap-y-6 py-8 h-full w-full items-center">
                 <div className="md:col-span-2">
                   <label
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -133,8 +132,8 @@ const KYCIDetails = () => {
                     onClick={handleuploadImage}
                   />
                 )}
-              </div>
-              <div className="flex flex-col md:flex-row gap-8">
+              </div> */}
+              <div className="flex flex-col gap-8">
                 <div className="relative w-full md:w-6/12 flex flex-col gap-2">
                   <label
                     htmlFor="documentno"

@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useCallback } from "react";
+import React, { Fragment, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { CONST, utils } from "@/utils";
 import KYCIDetails from "./verify-profile/KYCIDetails";
@@ -12,6 +12,7 @@ import Subscription from "./subscription";
 import Deposit from "./deposit";
 import Withdraw from "./withdraw";
 import UserProfile from "./profile";
+import ChangePassword from "./changePassword";
 
 const profileTabLinks = [
   { name: "Dashboard", key: "dashboard", icon: utils.DashboardIcon(20, 20) },
@@ -37,10 +38,7 @@ const ProfileScreen = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.profile);
-  console.log("profile::", profile);
-
   const step = useSelector((state) => state?.user?.step);
-
   const { key } = router.query;
 
   const handleLogout = useCallback(() => {
@@ -48,6 +46,27 @@ const ProfileScreen = () => {
     utils.showSuccessMsg(CONST.MSG.LOGOUT_SUCCESS);
     router.push(CONST.Routes.LOGIN);
   }, [dispatch, router]);
+
+  useEffect(() => {
+    if (step === CONST.DEFAULT_STEP && profile?.profileData?.nomineeId) {
+      router.push("/profile?key=verify-kyc");
+    } else if (
+      step === CONST.KYC_VERIFY.BASIC_VERIFY &&
+      profile?.profileData?.kycId
+    ) {
+      router.push("/profile?key=address");
+    } else if (
+      step === CONST.KYC_VERIFY.PAN_VERIFY &&
+      profile?.profileData?.addressId
+    ) {
+      router.push("/profile?key=bank");
+    } else if (
+      step === CONST.KYC_VERIFY.AADHAR_VERIFY &&
+      profile?.profileData?.bankId
+    ) {
+      router.push("/profile?key=dashboard");
+    }
+  }, [step, profile, router]);
 
   const handleTabClick = useCallback(
     (key) => {
@@ -86,7 +105,7 @@ const ProfileScreen = () => {
       case "withdraw":
         return <Withdraw />;
       case "change-password":
-        return "Coming soon...";
+        return <ChangePassword />;
       default:
         return <Dashboard />;
     }
