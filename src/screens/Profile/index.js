@@ -13,6 +13,7 @@ import Deposit from "./deposit";
 import Withdraw from "./withdraw";
 import UserProfile from "./profile";
 import ChangePassword from "./changePassword";
+import { debounce } from "lodash";
 
 const profileTabLinks = [
   { name: "Dashboard", key: "dashboard", icon: utils.DashboardIcon(20, 20) },
@@ -37,8 +38,8 @@ const profileTabLinks = [
 const ProfileScreen = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const profile = useSelector((state) => state.profile);
   const step = useSelector((state) => state?.user?.step);
+  const newStep = useSelector((state) => state?.profile?.profileData?.steps);
   const { key } = router.query;
 
   const handleLogout = useCallback(() => {
@@ -47,43 +48,50 @@ const ProfileScreen = () => {
     router.push(CONST.Routes.LOGIN);
   }, [dispatch, router]);
 
+  const debouncedNavigation = useCallback(
+    debounce((targetKey) => {
+      router.push(`/profile?key=${targetKey}`);
+    }, 300),
+    [router]
+  );
+
   useEffect(() => {
-    if (step === CONST.DEFAULT_STEP && profile?.profileData?.nomineeId) {
-      router.push("/profile?key=verify-kyc");
-    } else if (
-      step === CONST.KYC_VERIFY.BASIC_VERIFY &&
-      profile?.profileData?.kycId
-    ) {
-      router.push("/profile?key=address");
-    } else if (
-      step === CONST.KYC_VERIFY.PAN_VERIFY &&
-      profile?.profileData?.addressId
-    ) {
-      router.push("/profile?key=bank");
-    } else if (
-      step === CONST.KYC_VERIFY.AADHAR_VERIFY &&
-      profile?.profileData?.bankId
-    ) {
-      router.push("/profile?key=dashboard");
+    let targetKey = null;
+    if (!newStep) {
+      targetKey = "profile";
+    } else if (newStep === CONST.KYC_VERIFY.BASIC_VERIFY) {
+      targetKey = "verify-kyc";
+    } else if (newStep === CONST.KYC_VERIFY.PAN_VERIFY) {
+      targetKey = "address";
+    } else if (newStep === CONST.KYC_VERIFY.AADHAR_VERIFY) {
+      targetKey = "bank";
+    } else if (newStep === CONST.KYC_VERIFY.STEP_COMPLETED) {
+      targetKey = "dashboard";
     }
-  }, [step, profile, router]);
+
+    if (targetKey && key !== targetKey && newStep !== step) {
+      debouncedNavigation(targetKey);
+    }
+  }, [newStep, key, debouncedNavigation]);
 
   const handleTabClick = useCallback(
-    (key) => {
+    (selectedKey) => {
       if (
-        (key === "profile" && step === 0) ||
-        (key === "verify-kyc" && step < CONST.VERIFY_KYC_STEPS.KYC_DETAILS) ||
-        (key === "address" && step < CONST.VERIFY_KYC_STEPS.ADDRESS_DETAILS) ||
-        (key === "bank" && step < CONST.VERIFY_KYC_STEPS.BANK_DETAILS)
+        (selectedKey === "profile" && step === 0) ||
+        (selectedKey === "verify-kyc" &&
+          step < CONST.VERIFY_KYC_STEPS.KYC_DETAILS) ||
+        (selectedKey === "address" &&
+          step < CONST.VERIFY_KYC_STEPS.ADDRESS_DETAILS) ||
+        (selectedKey === "bank" && step < CONST.VERIFY_KYC_STEPS.BANK_DETAILS)
       ) {
         utils.showErrorMsg(
           "Please complete the previous steps before proceeding."
         );
         return;
       }
-      router.push(`/profile?key=${key}`);
+      router.push(`/profile?key=${selectedKey}`);
     },
-    [step, router]
+    [newStep, key, step, router]
   );
 
   const renderTabContent = () => {

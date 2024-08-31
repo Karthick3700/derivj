@@ -9,5 +9,6 @@ export const UPDATE_BANK = "profile/update-bank";
 export const PLAN = "plan";
 export const CHANGE_PASSWORD = "user/changePassword";
 export const PAYMENT = "payment";
+export const ACTIVE_PLANS = "profile/dashboard";
 // Profile Image Uploader
 export const UPLOAD_IMAGE = "/profile/image";

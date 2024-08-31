@@ -16,6 +16,7 @@
     "dotenv": "^16.4.5",
     "flowbite": "^2.5.1",
     "flowbite-react": "^0.10.1",
+    "lodash": "^4.17.21",
     "next": "14.2.5",
     "qrcode.react": "^4.0.1",
     "react": "^18",

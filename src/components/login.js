@@ -43,7 +43,7 @@ const Login = () => {
         utils.showSuccessMsg(CONST.MSG.LOGIN_SUCCESS);
         dispatch(login(resp?.doc));
 
-        router.push(`${CONST.Routes.PROFILE}?key=profile`);
+        router.push(CONST.Routes.PROFILE);
       } else {
         utils.showErrorMsg(resp.message);
       }

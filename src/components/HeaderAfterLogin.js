@@ -39,11 +39,11 @@ const HeaderAfterLogin = () => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
   }, [menuOpen]);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = () => {
     dispatch(logout());
-    router.push(CONST.Routes.LOGIN);
+    router.replace(CONST.Routes.LOGIN);
     utils.showSuccessMsg(CONST.MSG.LOGOUT_SUCCESS);
-  }, [dispatch, router]);
+  };
 
   return (
     <Fragment>

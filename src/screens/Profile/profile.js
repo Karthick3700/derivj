@@ -223,6 +223,7 @@ const UserProfile = () => {
               maxDate={maxDate}
               onSelectedDateChanged={(e) => handleDateOfBirthChange(e)}
               disabled={isDisabled ? true : false}
+              className="datepicker-year"
             />
 
             {errors?.dateOfBirth && (

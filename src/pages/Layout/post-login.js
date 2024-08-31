@@ -15,7 +15,7 @@ const PostLogin = ({ children }) => {
         dispatch(setMount(true));
       }
 
-      if (isMounted && isLoggedIn && isNew !== null) {
+      if (isMounted && isLoggedIn && (isNew !== null || isNew === false)) {
         await dispatch(fetchUserProfile());
       }
 

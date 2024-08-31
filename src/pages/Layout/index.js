@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   loadCommonData,
@@ -38,35 +38,33 @@ const Layout = ({ children }) => {
     }
   }, [isLoggedIn, router, dispatch, router.pathname]);
 
+  const initialize = useCallback(async () => {
+    if (!isMounted) {
+      dispatch(setMount(true));
+    }
+
+    const token = localStorage.getAuthToken();
+    if (token) {
+      localStorage.setAuthToken(token);
+      const user = localStorage.getAuthUser();
+      dispatch(login(user));
+    }
+
+    try {
+      const resp = await service.get(MASTER);
+      if (resp?.statusCode === CONST.status.SUCCESS) {
+        dispatch(loadCommonData(resp.doc));
+      }
+    } catch (err) {
+      console.error("Error loading common data:", err);
+    }
+  }, [isMounted, dispatch]);
+
   useEffect(() => {
-    const initialize = async () => {
-      if (!isMounted) {
-        dispatch(setMount(true));
-      }
-
-      // Check session login
-      const token = localStorage.getAuthToken();
-      if (token) {
-        localStorage.setAuthToken(token);
-        const user = localStorage.getAuthUser();
-        dispatch(login(user));
-      }
-
-      // Load common data
-      try {
-        const resp = await service.get(MASTER);
-        if (resp?.statusCode === CONST.status.SUCCESS) {
-          dispatch(loadCommonData(resp.doc));
-        }
-      } catch (err) {
-        console.error("Error loading common data:", err);
-      }
-    };
-
     if (isMounted) {
       initialize();
     }
-  }, [dispatch, isMounted]);
+  }, [initialize, isMounted]);
 
   return (
     <>

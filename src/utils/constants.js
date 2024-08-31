@@ -150,6 +150,7 @@ export const KYC_VERIFY = {
   BASIC_VERIFY: 10,
   PAN_VERIFY: 20,
   AADHAR_VERIFY: 30,
+  STEP_COMPLETED: 40,
 };
 export const USER_STATUS = {
   PROCESS: 0,

@@ -27,12 +27,21 @@ const initialState = {
   isKycVerified: false,
   isAddressVerified: false,
   isBankVerified: false,
+  paidPlan: null,
+  activePlan: null,
 };
 
 const accountSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    setPaidPlan: (state, action) => {
+      state.paidPlan = action?.payload;
+    },
+    setActivePlan: (state, action) => {
+      state.activePlan = action?.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(uploadImage.pending, handlePending)
@@ -86,7 +95,6 @@ const accountSlice = createSlice({
   },
 });
 
-export const { uploadImageData, uploadUserProfile, clearError } =
-  accountSlice.actions;
+export const { setPaidPlan,setActivePlan } = accountSlice.actions;
 
 export default accountSlice;

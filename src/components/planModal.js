@@ -10,6 +10,8 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import Loading from "./loader";
+import { setPaidPlan } from "@/redux/features/account/accountSlice";
+
 
 const PlanModal = ({ showModal, onClose, plan }) => {
   const dispatch = useDispatch();
@@ -85,7 +87,7 @@ const PlanModal = ({ showModal, onClose, plan }) => {
         const response = await service.post(PAYMENT, payload);
 
         if (response?.statusCode === CONST.status.SUCCESS) {
-          console.log("response::", response);
+          dispatch(setPaidPlan(response?.doc));
           utils.showSuccessMsg(response?.message);
           reset();
           setLoading(false);

@@ -139,7 +139,7 @@ const KYCIDetails = () => {
                     htmlFor="documentno"
                     className="bg-transparent rounded-b-sm  pt-2 pr-2 pb-1 pl-2 -mt-3 mr-0 mb-0 ml-2 font-semibold text-slate-700   dark:text-gray-400 "
                   >
-                    Document No<span className="text-red-700">*</span>
+                    Enter PAN No<span className="text-red-700">*</span>
                   </label>
                   <input
                     id="documentno"
@@ -160,7 +160,7 @@ const KYCIDetails = () => {
                     htmlFor="redocument-no"
                     className="bg-transparent rounded-b-sm  pt-2 pr-2 pb-1 pl-2 -mt-3 mr-0 mb-0 ml-2 font-semibold text-slate-700   dark:text-gray-400 "
                   >
-                    Re-Enter Document No
+                    Re-Enter PAN No
                     <span className="text-red-700">*</span>
                   </label>
                   <input
