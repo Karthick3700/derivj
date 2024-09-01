@@ -26,7 +26,7 @@ const Login = () => {
     resolver: yupResolver(validator.loginSchema),
   });
 
-  const showPassword = useSelector((state) => state.local?.loginShowpwd);
+  const {showPassword} = useSelector((state) => state.local?.loginShowpwd);
 
   const handleShowPassword = useCallback(() => {
     dispatch(toggleLoginShowpwd());
@@ -41,7 +41,7 @@ const Login = () => {
 
       if (resp?.statusCode === CONST.status.SUCCESS) {
         utils.showSuccessMsg(CONST.MSG.LOGIN_SUCCESS);
-        dispatch(login(resp?.doc));
+        await dispatch(login(resp?.doc));
 
         router.push(CONST.Routes.PROFILE);
       } else {

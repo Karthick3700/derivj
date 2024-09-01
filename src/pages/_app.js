@@ -1,4 +1,5 @@
 import "flowbite/dist/flowbite.css";
+import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/globals.css";
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";

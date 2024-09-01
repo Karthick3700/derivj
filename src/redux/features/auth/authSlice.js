@@ -36,7 +36,6 @@ const authSlice = createSlice({
       state.isNew = payload.isNew || false;
       state.token = payload.accessToken || null;
       state.step = payload.step;
-
       localStorage.setAuthUser(state.user);
       localStorage.setAuthToken(state.token);
       localStorage.setAuthUserIsNew(state.isNew);

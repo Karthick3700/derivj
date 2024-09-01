@@ -1,4 +1,10 @@
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePlansList } from "@/redux/features/ui/uiSlice";
 import { CONST } from "@/utils";
@@ -11,11 +17,14 @@ import { setActivePlan } from "@/redux/features/account/accountSlice";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const plans = useSelector((state) => state?.local?.plans);
+
   const isKycVerified = useSelector(
     (state) => state?.profile?.profileData?.isKycVerified
   );
+  let hasPlansFetched = useRef(isKycVerified);
+  
   const activePlan = useSelector((state) => state?.profile?.activePlan) || {};
-  console.log("activeplan::", activePlan);
+
   const [showModal, setShowModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -49,9 +58,10 @@ const Dashboard = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (isKycVerified) {
+    if (hasPlansFetched.current) {
       fetchPlans();
       fetchActivePlans();
+      hasPlansFetched.current = false;
     }
   }, [isKycVerified, fetchPlans, fetchActivePlans]);
 

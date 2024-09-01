@@ -14,8 +14,13 @@ import Processing from "@/components/process";
 import Success from "@/components/success";
 import Loading from "@/components/loader";
 import Failure from "@/components/failure";
+import { setIsAddressSubmitted } from "@/redux/features/ui/uiSlice";
 
 const AddressDetails = () => {
+  const isAddressSubmitted = useSelector(
+    (state) => state?.local?.isAddressSubmitted
+  );
+
   const authUser = useSelector((state) => state?.profile?.profileData);
   const addressStatus = authUser?.addressId?.addressStatus;
   const isLoading = useSelector((state) => state?.profile?.isLoading);
@@ -24,6 +29,14 @@ const AddressDetails = () => {
   // const [imgPreviewBack, setImgPreviewBack] = useState(null);
   // const [imageFront, setImageFront] = useState(null);
   // const [imageBack, setImageBack] = useState(null);
+
+  useEffect(() => {
+    if (isAddressSubmitted) {
+      dispatch(fetchUserProfile());
+    }
+
+    return () => dispatch(setIsAddressSubmitted(false));
+  }, [dispatch, isAddressSubmitted]);
 
   const {
     register,
@@ -139,7 +152,7 @@ const AddressDetails = () => {
       };
       try {
         await dispatch(updateAddress(payload));
-        await dispatch(fetchUserProfile());
+        dispatch(setIsAddressSubmitted(true));
         reset();
       } catch (error) {
         console.log("error::", error);

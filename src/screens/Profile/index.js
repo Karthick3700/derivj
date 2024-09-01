@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useCallback, useEffect } from "react";
+import React, { Fragment, useCallback, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { CONST, utils } from "@/utils";
 import KYCIDetails from "./verify-profile/KYCIDetails";
@@ -49,9 +49,13 @@ const ProfileScreen = () => {
   }, [dispatch, router]);
 
   const debouncedNavigation = useCallback(
-    debounce((targetKey) => {
-      router.push(`/profile?key=${targetKey}`);
-    }, 300),
+    (targetKey) => {
+      const debouncedFn = debounce(() => {
+        router.push(`/profile?key=${targetKey}`);
+      }, 300);
+
+      debouncedFn();
+    },
     [router]
   );
 
@@ -72,7 +76,7 @@ const ProfileScreen = () => {
     if (targetKey && key !== targetKey && newStep !== step) {
       debouncedNavigation(targetKey);
     }
-  }, [newStep, key, debouncedNavigation]);
+  }, [step, newStep, key, debouncedNavigation]);
 
   const handleTabClick = useCallback(
     (selectedKey) => {
@@ -91,7 +95,7 @@ const ProfileScreen = () => {
       }
       router.push(`/profile?key=${selectedKey}`);
     },
-    [newStep, key, step, router]
+    [step, router]
   );
 
   const renderTabContent = () => {

@@ -12,7 +12,6 @@ import { useDispatch } from "react-redux";
 import Loading from "./loader";
 import { setPaidPlan } from "@/redux/features/account/accountSlice";
 
-
 const PlanModal = ({ showModal, onClose, plan }) => {
   const dispatch = useDispatch();
   const [image, setImage] = useState(null);
@@ -102,7 +101,7 @@ const PlanModal = ({ showModal, onClose, plan }) => {
         utils.showErrorMsg(error?.message || "An unexpected error occurred.");
       }
     },
-    [plan, reset, onClose]
+    [, dispatch, plan, reset, onClose]
   );
 
   if (!showModal) return null;

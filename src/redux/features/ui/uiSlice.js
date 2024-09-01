@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { act } from "react";
 
 const initialState = {
   signupShowpwd: false,
@@ -12,6 +13,11 @@ const initialState = {
   changeShowpwd: false,
   newShowpwd: false,
   newConfirmpwd: false,
+  isProfileSubmitted: false,
+  isKycSubmitted: false,
+  isAddressSubmitted: false,
+  isBankSubmitted: false,
+  isProfileFetched: false,
 };
 
 const uiSlice = createSlice({
@@ -51,6 +57,21 @@ const uiSlice = createSlice({
     showConfirmnewpwd: (state) => {
       state.newConfirmpwd = !state.newConfirmpwd;
     },
+    setIsProfileSubmitted: (state, action) => {
+      state.isProfileSubmitted = action.payload;
+    },
+    setIsKycSubmitted: (state, action) => {
+      state.isKycSubmitted = action.payload;
+    },
+    setIsAddressSubmitted: (state, action) => {
+      state.isAddressSubmitted = action.payload;
+    },
+    setIsBanksubmitted: (state, action) => {
+      state.isBankSubmitted = action.payload;
+    },
+    setIsProfileFetched: (state, action) => {
+      state.isProfileFetched = action.payload;
+    },
   },
 });
 
@@ -66,6 +87,11 @@ export const {
   showOldpwd,
   showNewpwd,
   showConfirmnewpwd,
+  setIsAddressSubmitted,
+  setIsBanksubmitted,
+  setIsKycSubmitted,
+  setIsProfileSubmitted,
+  setIsProfileFetched,
 } = uiSlice.actions;
 
 export default uiSlice;

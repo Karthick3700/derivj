@@ -14,11 +14,14 @@ import Processing from "@/components/process";
 import Success from "@/components/success";
 import Loading from "@/components/loader";
 import Failure from "@/components/failure";
+import { setIsKycSubmitted } from "@/redux/features/ui/uiSlice";
 
 const KYCIDetails = () => {
   // const [image, setImage] = useState(null);
   // const [preview, setPreview] = useState(null);
   const dispatch = useDispatch();
+  const isKycSubmitted = useSelector((state) => state?.local?.isKycSubmitted);
+
   const authUser = useSelector((state) => state?.profile?.profileData);
   const kycStatus = authUser?.kycId?.kycStatus;
   const isLoading = useSelector((state) => state?.profile?.isLoading);
@@ -73,6 +76,14 @@ const KYCIDetails = () => {
   //   }
   // }, [dispatch, image, setValue]);
 
+  useEffect(() => {
+    if (isKycSubmitted) {
+      dispatch(fetchUserProfile());
+    }
+
+    return () => dispatch(setIsKycSubmitted(false));
+  }, [dispatch, isKycSubmitted]);
+
   const handleKYCSubmit = useCallback(
     async (data) => {
       const { documentNo } = data;
@@ -83,7 +94,7 @@ const KYCIDetails = () => {
       };
       try {
         await dispatch(updateKYC(payload));
-        dispatch(fetchUserProfile());
+        dispatch(setIsKycSubmitted(true));
         reset();
       } catch (error) {
         console.log("error::", error);

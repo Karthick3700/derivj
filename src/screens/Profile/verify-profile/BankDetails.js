@@ -14,9 +14,11 @@ import Processing from "@/components/process";
 import Success from "@/components/success";
 import Loading from "@/components/loader";
 import Failure from "@/components/failure";
+import { setIsBanksubmitted } from "@/redux/features/ui/uiSlice";
 
 const BankDetails = () => {
   const dispatch = useDispatch();
+  const isBankSubmitted = useSelector((state) => state?.local?.isBankSubmitted);
   const authUser = useSelector((state) => state?.profile?.profileData);
   const isLoading = useSelector((state) => state?.profile?.isLoading);
   const bankStatus = authUser?.bankId?.bankStatus;
@@ -70,6 +72,16 @@ const BankDetails = () => {
   //     console.log("Error in uploading image::", error);
   //   }
   // }, [dispatch, image, setValue]);
+  useEffect(() => {
+    const fetchData = async () => {
+      await dispatch(fetchUserProfile());
+    };
+    if (isBankSubmitted) {
+      fetchData();
+    }
+
+    return () => dispatch(setIsBanksubmitted(false));
+  }, [dispatch, isBankSubmitted]);
 
   const handleUpdateBankSubmit = useCallback(
     async (data) => {
@@ -77,7 +89,7 @@ const BankDetails = () => {
       const payload = { name, holder, accountNumber, ifscCode, upiId };
       try {
         await dispatch(updateBank(payload));
-        dispatch(fetchUserProfile());
+        dispatch(setIsBanksubmitted(true));
         reset();
       } catch (error) {
         console.log("error::", error);
