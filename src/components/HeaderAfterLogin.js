@@ -52,7 +52,7 @@ const HeaderAfterLogin = () => {
           href={CONST.Routes.MAIN}
           className="flex items-center gap-2 md:ps-4"
         >
-          {utils.Logo()}
+          {utils.tradeLogo()}
           <div className="text-xl md:text-2xl font-semibold font-deca  italic text-black dark:text-white">
             derivJ
           </div>

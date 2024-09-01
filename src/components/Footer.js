@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-20 md:gap-4">
         <div className="flex flex-col gap-4 w-full md:w-5/6 col-span-1 ">
           <div className="flex items-center gap-2 md:ps-4 w-max">
-            {utils.Logo()}
+            {utils.tradeLogo()}
             <div className="text-xl md:text-2xl font-semibold font-deca  italic text-black dark:text-white">
               derivJ
             </div>

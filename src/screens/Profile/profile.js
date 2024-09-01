@@ -412,7 +412,7 @@ const UserProfile = () => {
         </div>
         <div className="flex gap-12 pt-8 w-full">
           <button
-            className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-deca bg-slate-800 w-28 dark:text-gray-200 text-white font-bold whitespace-nowrap dark:bg-transparent dark:hover:bg-slate-700 hover:bg-black hover:text-white"
+            className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-deca bg-slate-800 w-28 dark:text-gray-200 text-white font-bold whitespace-nowrap dark:bg-transparent dark:hover:bg-slate-700 hover:bg-black hover:text-white disabled:cursor-not-allowed"
             type="submit"
             disabled={isDisabled ? true : false}
           >
