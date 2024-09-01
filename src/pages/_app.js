@@ -8,7 +8,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { localStorage } from "@/utils";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
-import Layout from "./layout";
+import Layout from "./layout/layout";
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
