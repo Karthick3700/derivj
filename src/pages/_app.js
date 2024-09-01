@@ -2,13 +2,15 @@ import "flowbite/dist/flowbite.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/globals.css";
 import Head from "next/head";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { localStorage } from "@/utils";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
-import Layout from "./layout/layout";
+import Layout from "@/components/Layout";
+
+
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
