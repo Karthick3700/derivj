@@ -11,12 +11,15 @@ import {
   toggleSignupShowpwd,
 } from "@/redux/features/ui/uiSlice";
 import { service } from "@/services";
+import { loading } from "@/redux/features/auth/authSlice";
+import Loading from "./loader";
 
 const Register = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const showPassword = useSelector((state) => state.local?.signupShowpwd);
   const showConfirmPwd = useSelector((state) => state.local?.signupConfirmpwd);
+  const isLoading = useSelector((state) => state?.user?.isLoading);
 
   const handleShowPassword = useCallback(() => {
     dispatch(toggleSignupShowpwd());
@@ -37,6 +40,7 @@ const Register = () => {
   });
 
   const onSubmitSignup = async (data) => {
+    dispatch(loading(true));
     const { name, email, password } = data;
     const payload = { name, email, password };
 
@@ -48,9 +52,11 @@ const Register = () => {
       } else {
         utils.showErrorMsg(resp?.message);
       }
-      reset();
     } catch (error) {
       console.log("Error::", error);
+    } finally {
+      dispatch(loading(false));
+      reset();
     }
   };
 
@@ -162,7 +168,7 @@ const Register = () => {
                 type="submit"
                 className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-slate-800 uppercase tracking-widest rounded-lg transition duration-200 hover:bg-black ease"
               >
-                Create Account
+                {isLoading ? <Loading width="w-8" height="h-8" /> : "create account"}
               </button>
             </div>
             <div className="relative inline-flex gap-2 items-center justify-center mx-auto w-full">

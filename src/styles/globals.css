@@ -162,3 +162,13 @@
     }
   }
 }
+
+.react-datepicker {
+  @apply font-deca;
+}
+.react-datepicker__header {
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

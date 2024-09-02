@@ -1,7 +1,5 @@
-// import { Datepicker } from "flowbite-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ImageUploader from "./image-uploader";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { profileSchema } from "@/utils/validator";
@@ -12,9 +10,8 @@ import {
   uploadImage,
 } from "@/redux/features/account/accountBuilder";
 import Loading from "@/components/loader";
-import ImageFallback from "./verify-profile/ImageFallback";
 import DatePicker from "react-datepicker";
-import { sub } from "date-fns";
+import { subYears } from "date-fns";
 import { setIsProfileSubmitted } from "@/redux/features/ui/uiSlice";
 
 const initialState = {
@@ -34,8 +31,6 @@ const initialState = {
 const UserProfile = () => {
   const dispatch = useDispatch();
   const [selectedDocumentType, setSelectedDocumentType] = useState("");
-  // const [image, setImage] = useState();
-  // const [preivew, setPreview] = useState();
 
   const { documentType, relationShip } = useSelector(
     (state) => state?.user?.commonData
@@ -81,12 +76,41 @@ const UserProfile = () => {
     return () => dispatch(setIsProfileSubmitted(false));
   }, [profileData, setValue, isProfileSubmitted, dispatch]);
 
+  const handleDateOfBirthChange = useCallback(
+    (date) => {
+      if (date instanceof Date && !isNaN(date)) {
+        const dob = utils.formatDate(date);
+        setValue("dateOfBirth", dob);
+      }
+    },
+    [setValue]
+  );
+
+  const handleNomineeDateOfBirthChange = useCallback(
+    (date) => {
+      if (date instanceof Date && !isNaN(date)) {
+        const nomineeDob = utils.formatDate(date);
+        setValue("nominee.dateOfBirth", nomineeDob);
+      }
+    },
+    [setValue]
+  );
+
+  const handleDoctypeChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      setSelectedDocumentType(value);
+      setValue("nominee.documentType", value);
+      setValue("nominee.documentTypeVal", value);
+    },
+    [setValue]
+  );
   const handleProfileSubmit = useCallback(
     async (data) => {
       const payload = {
         dateOfBirth: data.dateOfBirth,
         phoneNumber: data.phoneNumber,
-        // imageId: data.imageId,
+
         nominee: {
           name: data.nominee.name,
           email: data.nominee.email,
@@ -108,31 +132,6 @@ const UserProfile = () => {
     [dispatch, reset]
   );
 
-  const handleDateOfBirthChange = useCallback(
-    (date) => {
-      console.log(utils.formatDate(date));
-      setValue("dateOfBirth", utils.formatDate(date));
-    },
-    [setValue]
-  );
-
-  const handleNomineeDateOfBirthChange = useCallback(
-    (date) => {
-      setValue("nominee.dateOfBirth", utils.formatDate(date));
-    },
-    [setValue]
-  );
-
-  const handleDoctypeChange = useCallback(
-    (e) => {
-      const value = e.target.value;
-      setSelectedDocumentType(value);
-      setValue("nominee.documentType", value);
-      setValue("nominee.documentTypeVal", value);
-    },
-    [setValue]
-  );
-
   return (
     <form
       onSubmit={handleSubmit(handleProfileSubmit)}
@@ -148,40 +147,6 @@ const UserProfile = () => {
             Basic Details
           </h2>
         </div>
-
-        {/* <div className="grid grid-cols-1 md:grid-cols-6 space-y-6 py-8 h-full w-full items-center">
-          <ImageUploader />
-          {profileData?.imageId ? (
-            ""
-          ) : (
-            <div className="col-span-2 flex flex-col gap-6">
-              <label
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                htmlFor="file_input"
-              >
-                Profile Image
-              </label>
-              <input
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                id="file_input"
-                type="file"
-                onChange={handleProfileImageChange}
-                disabled={isDisabled ? true : false}
-              />
-              {errors?.imageId && (
-                <p className="text-red-500 dark:text-red-400 mt-2 text-[12px]">
-                  {errors?.imageId?.message}
-                </p>
-              )}
-              {preivew && (
-                <ImageFallback
-                  sourceurl={preivew}
-                  onClick={handleuploadImage}
-                />
-              )}
-            </div>
-          )}
-        </div> */}
 
         <div className="flex gap-12 pt-8 w-full md:flex-nowrap flex-wrap">
           <div className="flex flex-col gap-2 w-full md:w-6/12">
@@ -199,18 +164,14 @@ const UserProfile = () => {
               showIcon
               showYearDropdown
               showMonthDropdown
-              className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
-              selected={watch("dateOfBirth")}
+              className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-xs  rounded-lg"
               onChange={(date) => handleDateOfBirthChange(date)}
               disabled={isDisabled ? true : false}
               dropdownMode="select"
-              maxDate={sub(new Date(), {
-                years: 18,
-              })}
-              minDate={sub(new Date(), {
-                years: 100,
-              })}
+              maxDate={subYears(new Date(), 18)}
+              minDate={subYears(new Date(), 100)}
               closeOnScroll={true}
+              value={watch("dateOfBirth")}
             />
 
             {errors?.dateOfBirth && (
@@ -280,16 +241,11 @@ const UserProfile = () => {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              maxDate={sub(new Date(), {
-                years: 18,
-              })}
-              minDate={sub(new Date(), {
-                years: 100,
-              })}
+              maxDate={subYears(new Date(), 18)}
+              minDate={subYears(new Date(), 100)}
+              value={watch("nominee.dateOfBirth")}
               closeOnScroll={true}
-              yearClassName="hidden"
               className="appearance-none block w-full border disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500 p-2.5 text-sm  rounded-lg"
-              selected={watch("nominee.dateOfBirth")}
               onChange={(date) => handleNomineeDateOfBirthChange(date)}
               disabled={isDisabled ? true : false}
             />

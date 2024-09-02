@@ -1,4 +1,3 @@
-import "flowbite/dist/flowbite.css";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/globals.css";
 import Head from "next/head";
@@ -9,8 +8,6 @@ import { localStorage } from "@/utils";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
 import Layout from "@/components/Layout";
-
-
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
