@@ -1,5 +1,6 @@
 import { service } from "@/services";
 import {
+  PLAN_SUBSCRIPTION,
   PROFILE,
   UPDATE_ADDRESS,
   UPDATE_BANK,
@@ -86,6 +87,19 @@ export const fetchUserProfile = createAsyncThunk(
       rejectWithValue,
       { hideSuccess: true, hideError: true }
     )
+);
+
+export const fetchSubscription = createAsyncThunk(
+  "auth/fetchSubscription",
+  async ({ skip = 0, limit = 10 }, { rejectWithValue }) => {
+    const SUBSCRIPTION = `${PLAN_SUBSCRIPTION}?skip=${skip}&limit=${limit}`;
+    return handleThunk(
+      service.get.bind(service, SUBSCRIPTION),
+      null,
+      rejectWithValue,
+      { hideSuccess: true, hideError: true }
+    );
+  }
 );
 
 export const updateKYC = createAsyncThunk(

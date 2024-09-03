@@ -9,6 +9,7 @@ import {
   handlePending,
   handleFulfilled,
   handleRejected,
+  fetchSubscription,
 } from "./accountBuilder";
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
   kyc: null,
   address: null,
   bank: null,
+  subscription: null,
   documentType: null,
   updatedStep: null,
   isKycVerified: false,
@@ -91,10 +93,15 @@ const accountSlice = createSlice({
       .addCase(updateBank.fulfilled, (state, action) => {
         handleFulfilled(state, action, "bankData");
       })
-      .addCase(updateBank.rejected, handleRejected);
+      .addCase(updateBank.rejected, handleRejected)
+      .addCase(fetchSubscription.pending, handlePending)
+      .addCase(fetchSubscription.fulfilled, (state, action) => {
+        handleFulfilled(state, action, "subscription");
+      })
+      .addCase(fetchSubscription.rejected, handleRejected);
   },
 });
 
-export const { setPaidPlan,setActivePlan } = accountSlice.actions;
+export const { setPaidPlan, setActivePlan } = accountSlice.actions;
 
 export default accountSlice;
