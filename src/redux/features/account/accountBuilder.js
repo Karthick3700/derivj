@@ -1,12 +1,15 @@
 import { service } from "@/services";
 import {
+  DEPOSIT,
   PLAN_SUBSCRIPTION,
   PROFILE,
+  SUBSCRIPTION,
   UPDATE_ADDRESS,
   UPDATE_BANK,
   UPDATE_KYC,
   UPLOAD_IMAGE,
   USER_PROFILE,
+  WITHDRAW,
 } from "@/services/api-url.service";
 import { CONST, utils } from "@/utils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -92,9 +95,35 @@ export const fetchUserProfile = createAsyncThunk(
 export const fetchSubscription = createAsyncThunk(
   "auth/fetchSubscription",
   async ({ skip = 0, limit = 10 }, { rejectWithValue }) => {
-    const SUBSCRIPTION = `${PLAN_SUBSCRIPTION}?skip=${skip}&limit=${limit}`;
+    const SUBSCRIPTION = `${SUBSCRIPTION}?skip=${skip}&limit=${limit}`;
     return handleThunk(
       service.get.bind(service, SUBSCRIPTION),
+      null,
+      rejectWithValue,
+      { hideSuccess: true, hideError: true }
+    );
+  }
+);
+
+export const fetchDepositlist = createAsyncThunk(
+  "auth/fetchDeposit",
+  async ({ skip = 0, limit = 10 }, { rejectWithValue }) => {
+    const DEPOSIT = `${DEPOSIT}?skip=${skip}&limit=${limit}`;
+    return handleThunk(
+      service.get.bind(service, DEPOSIT),
+      null,
+      rejectWithValue,
+      { hideSuccess: true, hideError: true }
+    );
+  }
+);
+
+export const fetchWithdraw = createAsyncThunk(
+  "auth/fetchWithdraw",
+  async ({ skip = 0, limit = 10 }, { rejectWithValue }) => {
+    const WITHDRAW = `${WITHDRAW}?skip=${skip}&limit=${limit}`;
+    return handleThunk(
+      service.get.bind(service, WITHDRAW),
       null,
       rejectWithValue,
       { hideSuccess: true, hideError: true }

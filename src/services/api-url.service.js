@@ -10,6 +10,8 @@ export const PLAN = "plan";
 export const CHANGE_PASSWORD = "user/changePassword";
 export const PAYMENT = "payment";
 export const ACTIVE_PLANS = "profile/dashboard";
-export const PLAN_SUBSCRIPTION = "plan/subscription";
+export const SUBSCRIPTION = "plan/subscription";
+export const DEPOSIT = 'payment/deposit'
+export const WITHDRAW = 'payment/withdraw'
 // Profile Image Uploader
 export const UPLOAD_IMAGE = "/profile/image";

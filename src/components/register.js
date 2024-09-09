@@ -49,6 +49,7 @@ const Register = () => {
       if (resp?.statusCode === CONST.status.SUCCESSCODE) {
         utils.showSuccessMsg(resp?.message);
         router.push(CONST.Routes.LOGIN);
+        reset();
       } else {
         utils.showErrorMsg(resp?.message);
       }
@@ -56,7 +57,6 @@ const Register = () => {
       console.log("Error::", error);
     } finally {
       dispatch(loading(false));
-      reset();
     }
   };
 
@@ -168,7 +168,11 @@ const Register = () => {
                 type="submit"
                 className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-slate-800 uppercase tracking-widest rounded-lg transition duration-200 hover:bg-black ease"
               >
-                {isLoading ? <Loading width="w-8" height="h-8" /> : "create account"}
+                {isLoading ? (
+                  <Loading width="w-8" height="h-8" />
+                ) : (
+                  "create account"
+                )}
               </button>
             </div>
             <div className="relative inline-flex gap-2 items-center justify-center mx-auto w-full">

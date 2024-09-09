@@ -22,7 +22,7 @@ const Dashboard = () => {
     (state) => state?.profile?.profileData?.isKycVerified
   );
   let hasPlansFetched = useRef(isKycVerified);
-  
+
   const activePlan = useSelector((state) => state?.profile?.activePlan) || {};
 
   const [showModal, setShowModal] = useState(false);
@@ -104,6 +104,15 @@ const Dashboard = () => {
               </span>
             </div>
           )}
+        </div>
+        <div className="flex flex-wrap items-center gap-4 mx-auto">
+          <p>You need to withdraw click the button</p>
+          <button
+            className=" uppercase px-6 py-3 border rounded-full text-sm tracking-widest font-deca bg-slate-800 w-max dark:text-gray-200 text-white font-bold whitespace-nowrap dark:bg-transparent dark:hover:bg-slate-700 hover:bg-black hover:text-white disabled:cursor-not-allowed"
+            type="submit"
+          >
+            Withdraw
+          </button>
         </div>
         <div className="flex flex-col">
           <div className="flex border-b-2 py-4 border-gray-300">

@@ -10,6 +10,8 @@ import {
   handleFulfilled,
   handleRejected,
   fetchSubscription,
+  fetchDepositlist,
+  fetchWithdraw,
 } from "./accountBuilder";
 
 const initialState = {
@@ -31,6 +33,8 @@ const initialState = {
   isBankVerified: false,
   paidPlan: null,
   activePlan: null,
+  withdraw: null,
+  deposit: null,
 };
 
 const accountSlice = createSlice({
@@ -98,7 +102,17 @@ const accountSlice = createSlice({
       .addCase(fetchSubscription.fulfilled, (state, action) => {
         handleFulfilled(state, action, "subscription");
       })
-      .addCase(fetchSubscription.rejected, handleRejected);
+      .addCase(fetchSubscription.rejected, handleRejected)
+      .addCase(fetchDepositlist.pending, handlePending)
+      .addCase(fetchDepositlist.fulfilled, (state, action) => {
+        handleFulfilled(state, action, "deposit");
+      })
+      .addCase(fetchDepositlist.rejected, handleRejected)
+      .addCase(fetchWithdraw.pending, handleRejected)
+      .addCase(fetchWithdraw.fulfilled, (state, action) => {
+        handleFulfilled(state, action, "withdraw");
+      })
+      .addCase(fetchWithdraw.rejected, handleRejected);
   },
 });
 
